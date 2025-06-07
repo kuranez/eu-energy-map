@@ -5,3 +5,4 @@ data/__pycache__
 utils/__pycache__
 layout/__pycache__
 EU-Energy-Map.code-workspace
+.gitignore

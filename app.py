@@ -7,7 +7,7 @@ from data.loader import load_data
 from data.filters import preprocess, filter_data
 from components.widgets import create_widgets
 from components.charts import create_choropleth_map, create_bar_chart_year, create_bar_chart_country
-from layout.dashboard import build_layout
+from layout.dashboard_edit import build_layout
 
 pn.extension('tabulator', 'plotly', design='material', sizing_mode='stretch_width')
 

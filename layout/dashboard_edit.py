@@ -7,17 +7,17 @@ from config import LOGO_PATH
 
 def build_layout(interactive_map, interactive_bar_year, interactive_bar_country, year_slider, country_select):
     """
-    Baut das gesamte Panel-Layout zusammen
+    Builds the complete Panel layout
 
     Parameters:
-    - interactive_map: Karte (Plotly Map)
-    - interactive_bar_year: Balkendiagramm für Jahr
-    - interactive_bar_country: Zeitreihe für Land
-    - year_slider: IntSlider Widget
-    - country_select: Select Widget
+    - interactive_map: Map (Plotly Map)
+    - interactive_bar_year: Bar chart for year
+    - interactive_bar_country: Time series for country
+    - year_slider: IntSlider widget
+    - country_select: Select widget
 
     Returns:
-    - FastListTemplate Dashboard zur Anzeige
+    - FastListTemplate dashboard for display
     """
     # Tab structure
     tabs = pn.Tabs(
@@ -48,6 +48,8 @@ def build_layout(interactive_map, interactive_bar_year, interactive_bar_country,
     template = pn.template.FastListTemplate(
         title="EU Energy Map",
         logo=str(LOGO_PATH),
+        theme="default",
+        theme_toggle=False,
         sidebar=[],
         main=[layout]
     )

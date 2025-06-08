@@ -3,10 +3,15 @@
 import panel as pn
 import pandas as pd
 import geopandas as gpd
+
 from data.loader import load_data
 from data.filters import preprocess, filter_data
+
 from components.widgets import create_widgets
-from components.charts import create_choropleth_map, create_bar_chart_year, create_bar_chart_country
+from components.map import create_choropleth_map
+from components.charts.bar_chart_by_year import create_bar_chart_year 
+from components.charts.bar_chart_by_country import create_bar_chart_country
+
 from layout.dashboard import build_layout
 
 pn.extension('tabulator', 'plotly', design='material', sizing_mode='stretch_width')

@@ -31,7 +31,7 @@ def build_layout(interactive_map, interactive_bar_year, interactive_bar_country,
         This dashboard visualizes renewable energy data trends in the European Union, allowing users to filter by year and country.
         Use the tabs to explore different aspects of the data.
         
-        Data is sourced from [Eurostat](https://ec.europa.eu/eurostat/databrowser/explore/all/envir?lang=en&subtheme=nrg&display=list&sort=category).
+        Data is sourced from [Eurostat](https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en&category=nrg.nrg_quant.nrg_quanta.nrg_ind_share).
 
         ### Project Page on GitHub
         [https://github.com/kuranez/EU-Energy-Map](https://github.com/kuranez/EU-Energy-Map) \

@@ -130,3 +130,4 @@ If you're working with Eurostat TSV datasets and need a tool for quick conversio
 This project is open source and available under the **MIT License**. 
 You may modify, distribute, and use it freely in your own projects.
 
+---

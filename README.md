@@ -2,11 +2,11 @@
 
 An interactive dashboard that visualizes Eurostat data on renewable energy developments across European countries. Built with Python and Panel, the web app provides an intuitive interface to explore renewable energy trends from 2004 to 2022.
 
-## 🌍 Web App
+## 🌐 Web App
 
 > 🟢 **[Live Demo Coming Soon]**
 
-## 📸 Screenshot
+## Screenshot
 
 > ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/app.png|700x342](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/app.png)
 
@@ -23,15 +23,18 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 - Downloadable datasets and smooth filtering options
     
 
-####  Example Charts
+###  Example Charts
 
-##### Renewable Energy Share Per Year
+#### Renewable Energy Share Per Year
+---
 ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/year_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/year_chart.png)
 
-##### Renewable Energy Share Per Country
+#### Renewable Energy Share Per Country
+---
 ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/country_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/country_chart.png)
 
 #### Recent Changes
+---
 
 **Bar Charts**
 - Unified display of **EU Total Average** across all charts, with a toggle option to show/hide it.
@@ -52,6 +55,7 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 **File Structure**
 - Reorganization of file structure to me more **modular and easier to expand**.
+
 
 ---
 
@@ -83,7 +87,7 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 - **Categories:** Total renewables, electricity, heating/cooling, transport
     
 
-### 2. 🌐 Geographic Boundaries (GISCO - Eurostat)
+### 2. Geographic Boundaries (GISCO - Eurostat)
 
 - **File:** `europe.geojson`
     

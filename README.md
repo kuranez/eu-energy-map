@@ -104,16 +104,36 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 ## 📁 File Structure
 
-```
+```yaml
 EU-Energy-Map/
 │
+├── app.py
+├── config.py
+│
 ├── data/
-│   ├── nrg_ind_ren_linear.csv
-├── geo/
-│   └── europe.geojson
-├── app.ipynb
-├── requirements.txt
-└── README.md
+│   ├── loader.py
+│   ├── filters.py
+│
+├── components/
+│   ├── charts/ bar_chart_by_country.py
+│   ├── charts/ bar_chart_by_year.py
+│   ├── map.py
+│   ├── widgets.py
+│
+├── layout/
+│   ├── dashboard.py
+│
+├── utils/
+│   ├── colors.py
+│   ├── flags.py
+│
+├── assets/
+│   ├── europe-renewables-500px.png
+│   ├── logo-500px.png
+│
+├── data/ nrg_ind_ren_linear.csv
+│   
+├── geo/ europe.geojson
 ```
 
 ---

@@ -1,14 +1,19 @@
 # data/loader.py
 
+# Import necessary libraries
+
+# Standard libraries os for file handling, typing for type hints
 import os
 from typing import Union, Tuple
+
+# Pandas for data manipulation, GeoPandas for geographic data handling
 import pandas as pd
+
+# GeoPandas for geographic data handling
 import geopandas as gpd
 
-# Convert ISO2 country code to flag emoji
-
-def iso2_to_flag(iso2_code: str) -> str:
-    return chr(0x1F1E6 + ord(iso2_code[0]) - ord('A')) + chr(0x1F1E6 + ord(iso2_code[1]) - ord('A'))
+# Custom utility function to convert ISO2 country code to flag emoji
+from utils.flags import iso2_to_flag
 
 # Main function to load and preprocess data
 

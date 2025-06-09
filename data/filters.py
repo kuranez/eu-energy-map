@@ -1,11 +1,7 @@
 # data/filters.py
 
 import pandas as pd
-
-# Convert ISO2 country code to flag emoji
-
-def iso2_to_flag(iso2_code: str) -> str:
-    return chr(0x1F1E6 + ord(iso2_code[0]) - ord('A')) + chr(0x1F1E6 + ord(iso2_code[1]) - ord('A'))
+from utils.flags import iso2_to_flag
 
 # Preprocess the data to merge with Europe GeoDataFrame and clean up columns
 

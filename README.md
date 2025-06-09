@@ -2,13 +2,13 @@
 
 An interactive dashboard that visualizes Eurostat data on renewable energy developments across European countries. Built with Python and Panel, the web app provides an intuitive interface to explore renewable energy trends from 2004 to 2022.
 
-## 🌍 Web App
+## 🌐 Web App
 
 > 🟢 **[Live Demo Coming Soon]**
 
-## 📸 Screenshot
+## Screenshot
 
-> _Add a screenshot here to showcase the dashboard UI._
+> ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/app.png|700x342](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/app.png)
 
 ---
 
@@ -22,6 +22,42 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
     
 - Downloadable datasets and smooth filtering options
     
+
+###  Example Charts
+---
+
+#### ➤ Renewable Energy Share Per Year
+---
+![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/year_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/year_chart.png)
+
+---
+#### ➤ Renewable Energy Share Per Country
+---
+![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/country_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/country_chart.png)
+
+---
+### Recent Changes
+---
+
+**Bar Charts**
+- Unified display of **EU Total Average** across all charts, with a toggle option to show/hide it.
+- Minor improvements to hover templates and trace labels.
+	 
+**Map**
+- Implemented hover templates displaying **country flags and data**.
+- Recentered map and adjusted zoom.
+- Added layout spacers for improved alignment.
+
+**Description**
+- Added basic **usage instructions** to the dashboard.
+- Added emojis and graphics.
+
+**Layout & Dashboard**
+- Reorganized dashboard components for **better clarity and user experience**.
+- Minor improvements to scaling.
+
+**File Structure**
+- Reorganization of file structure to me more **modular and easier to expand**.
 
 ---
 
@@ -93,3 +129,5 @@ If you're working with Eurostat TSV datasets and need a tool for quick conversio
 
 This project is open source and available under the **MIT License**. 
 You may modify, distribute, and use it freely in your own projects.
+
+---

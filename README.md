@@ -24,16 +24,19 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
     
 
 ###  Example Charts
+---
 
-#### Renewable Energy Share Per Year
+#### ➤ Renewable Energy Share Per Year
 ---
 ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/year_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/year_chart.png)
 
-#### Renewable Energy Share Per Country
+---
+#### ➤ Renewable Energy Share Per Country
 ---
 ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/country_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/country_chart.png)
 
-#### Recent Changes
+---
+### Recent Changes
 ---
 
 **Bar Charts**
@@ -55,7 +58,6 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 **File Structure**
 - Reorganization of file structure to me more **modular and easier to expand**.
-
 
 ---
 
@@ -127,3 +129,4 @@ If you're working with Eurostat TSV datasets and need a tool for quick conversio
 
 This project is open source and available under the **MIT License**. 
 You may modify, distribute, and use it freely in your own projects.
+

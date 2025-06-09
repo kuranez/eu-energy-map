@@ -8,7 +8,7 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 ## Screenshot
 
-> ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/app.png|700x342](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/app.png)
+> ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/app.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/app.png)
 
 ---
 
@@ -28,12 +28,12 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 #### ➤ Renewable Energy Share Per Year
 ---
-![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/year_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/year_chart.png)
+![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/year_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/year_chart.png)
 
 ---
 #### ➤ Renewable Energy Share Per Country
 ---
-![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/country_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/country_chart.png)
+![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/country_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/country_chart.png)
 
 ---
 ### Recent Changes

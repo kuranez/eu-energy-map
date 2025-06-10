@@ -106,34 +106,28 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 ```yaml
 EU-Energy-Map/
-│
-├── app.py
-├── config.py
-│
+├── app.py                   # Main dashboard entry point
+├── config.py                # Configurations (tokens, paths, etc)
 ├── data/
-│   ├── loader.py
-│   ├── filters.py
-│
+│   ├── loader.py            # Loads and merges CSV/GeoJSON data
+│   ├── filters.py           # Preprocessing and filtering logic
+│   └── nrg_ind_ren_linear.csv   # Eurostat renewable energy data
 ├── components/
-│   ├── charts/ bar_chart_by_country.py
-│   ├── charts/ bar_chart_by_year.py
-│   ├── map.py
-│   ├── widgets.py
-│
+│   ├── charts/
+│   │   ├── bar_chart_by_country.py  # Bar chart: Country vsU
+│   │   ├── bar_chart_by_year.py     # Bar chart: All countries by year
+│   ├── map.py                # Interactive choropleth map
+│   ├── widgets.py            # Dashboard widgets (sliders, selectors)
 ├── layout/
-│   ├── dashboard.py
-│
-├── utils/
-│   ├── colors.py
-│   ├── flags.py
-│
+│   ├── dashboard.py          # Layout composition for Panel
+├── utils/                    # Helper functions
+│   ├── colors.py             # Color scales & conversion
+│   ├── flags.py              # ISO2 code → emoji flag
 ├── assets/
-│   ├── europe-renewables-500px.png
-│   ├── logo-500px.png
-│
-├── data/ nrg_ind_ren_linear.csv
-│   
-├── geo/ europe.geojson
+│   ├── europe-renewables-500px.png  # Dashboard image
+│   ├── logo-500px.png               # Logo
+├── geo/
+│   └── europe.geojson        # European country boundaries (GeoJSON)
 ```
 
 ---

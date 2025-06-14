@@ -25,7 +25,7 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 ## 🌐 Web App
 
-> [![Live Demo](https://img.shields.io/badge/🟢%20Live%20App-%20qr--code--generator-brightgreen?style=for-the-badge)](https://apps.kuracodez.space/qr-code-generator/app)
+> [![Live Demo](https://img.shields.io/badge/🟢%20Live%20App-%20EU--Energy--Map-0057B7?style=for-the-badge)](https://apps.kuracodez.space/eu-energy-map/app)
 >
 > **Try the app - explore renewable energy data for Europe directly in your browser.**
 

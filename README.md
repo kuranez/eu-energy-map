@@ -149,7 +149,7 @@ EU-Energy-Map/
 ├── assets/
 │   ├── europe-renewables-500px.png  # Dashboard image
 │   ├── logo-500px.png               # Logo
-├── geo/
+└── geo/
     └── europe.geojson        # European country boundaries (GeoJSON)
 ```
 

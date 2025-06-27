@@ -1,0 +1,11 @@
+
+Found 3 notebook files in './notebooks':
+v.1.0_eu-energy-map.ipynb: 539 lines of code
+v.1.1_eu-energy-map.ipynb: 397 lines of code
+v.1.2_eu-energy-map.ipynb: 104 lines of code
+
+Found 0 Python scripts in './scripts':
+
+Total code lines in all Jupyter Notebooks: 1040
+Total code lines in all Python scripts: 0
+Total code lines in both notebooks and scripts: 1040

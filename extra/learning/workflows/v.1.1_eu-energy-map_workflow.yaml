@@ -1,0 +1,76 @@
+EU_Energy_Map_v1.1:
+  I. Import:
+    Description: Import required libraries for I/O, dashboards, geospatial, and plotting.
+    Subcomponents:
+      - Standard Library: os, json
+      - Dashboard: panel (pn)
+      - Data: pandas (pd), geopandas (gpd)
+      - Visualization: plotly.express (px), plotly.graph_objects (go), plotly.io (pio), sample_colorscale
+
+  II. Settings:
+    Description: Initialize dashboard and plot visuals.
+    Subcomponents:
+      - Panel extensions: tabulator, plotly, material design
+      - Plotly renderer (optional)
+      - Mapbox token configuration
+
+  III. Data Processing:
+    a. Load data:
+      - Load CSV energy data
+      - Load GeoJSON dict for Europe
+      - Read GeoJSON into GeoDataFrame
+    b. Merge data:
+      - Merge energy CSV with GeoDataFrame on country code
+    c. Format data:
+      - Rename columns for readability
+      - Clean entries in “Energy Type”
+      - Drop unnecessary columns
+      - Convert numeric types and round values
+      - Add flag emojis via ISO2 codes
+      - Reorder columns into final schema
+    d. Filter data:
+      - Filter to EU country subset
+      - Select renewable energy totals
+      - Filter by default year and country
+    e. Data calculations:
+      - Compute average renewable percentage by year for the EU total
+
+  IV. Dashboard Components:
+    a. Widgets:
+      - Year selection slider
+      - Country select dropdown (with flags)
+    b. Sidebar:
+      - Markdown pane with project description and links
+    c. Main visual elements:
+      - Data table via Tabulator widget
+      - Choropleth map (function: create_choropleth_map)
+      - Yearly bar chart (create_bar_chart_year)
+      - Country-specific time series chart (create_bar_chart_country)
+
+  V. Dashboard Creation:
+    a. Instantiate visuals:
+      - Map, Year chart, Country chart for initial selections
+    b. Update functions:
+      - update_map(year)
+      - update_year_chart(year)
+      - update_country_chart(country or selection)
+    c. Bind widgets:
+      - Bind slider and dropdown to update functions
+
+  VI. Dashboard Layout:
+    a. Create panes:
+      - Year selection + chart
+      - Country selection + chart
+      - Data table pane
+    b. Tabs:
+      - “Filter by Year”
+      - “Filter by Country”
+      - “Explore Data” table
+    c. Assemble layout:
+      - Column combining interactive map and tabs
+
+  VII. Serve Dashboard:
+    Description: Render and serve as a web app.
+    Subcomponents:
+      - FastListTemplate with title, sidebar, and main layout
+      - `.servable()` to expose the dashboard

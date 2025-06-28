@@ -46,7 +46,7 @@ def load_data(
     merged_data.drop(columns=['LAST UPDATE', 'freq', 'unit', 'OBS_FLAG'], inplace=True)
     merged_data[['Year', 'Renewable Percentage']] = merged_data[['Year', 'Renewable Percentage']].apply(pd.to_numeric)
     merged_data['Renewable Percentage'] = merged_data['Renewable Percentage'].round(1)
-    # Remap 'HL' (used for Greece in some datasets) to 'GR' to ensure correct merging
+    # Remap 'EL' (used for Greece in some datasets) to 'GR' to ensure correct merging
     merged_data['CNTR_ID'] = merged_data['CNTR_ID'].replace('EL', 'GR')
     merged_data['Code'] = merged_data['Code'].replace('EL', 'GR')
     merged_data['Flag'] = merged_data['Code'].apply(iso2_to_flag)

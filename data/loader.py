@@ -15,6 +15,7 @@ import geopandas as gpd
 # Custom utility functions
 from utils.flags import iso2_to_flag
 from utils.helpers import load_csv_data, load_gdf, merge_data, rename_columns
+from utils.mapping import ENERGY_TYPE_MAPPING
 
 # Main function to load and preprocess data
 
@@ -40,13 +41,7 @@ def load_data(
 
     merged_data = rename_columns(merged_data)
 
-    energy_type_map = {
-        'REN': 'Renewable Energy Total',
-        'REN_ELC': 'Renewable Electricity',
-        'REN_HEAT_CL': 'Renewable Heating and Cooling',
-        'REN_TRA': 'Renewable Energy in Transport'
-    }
-    merged_data['Energy Type'] = merged_data['Energy Type'].replace(energy_type_map)
+    merged_data['Energy Type'] = merged_data['Energy Type'].replace(ENERGY_TYPE_MAPPING)
 
     merged_data.drop(columns=['LAST UPDATE', 'freq', 'unit', 'OBS_FLAG'], inplace=True)
     merged_data[['Year', 'Renewable Percentage']] = merged_data[['Year', 'Renewable Percentage']].apply(pd.to_numeric)

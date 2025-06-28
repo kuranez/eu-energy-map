@@ -2,7 +2,7 @@
 
 import pytest
 import pandas as pd
-from data.filters import iso2_to_flag, preprocess, filter_data
+from data.filters import preprocess, filter_data
 
 def test_preprocess_output_shape(raw_data):
     df, gdf = raw_data

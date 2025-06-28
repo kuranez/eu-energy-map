@@ -31,6 +31,9 @@ pip install pandas geopandas panel plotly
 - [Documentation](notebook/documentation.md)
 - [Changelog](notebook/changelog.md)
 
+## License
+This project is licensed under the [MIT License](LICENSE).
+
 ## Project Page
 - [GitHub: kuranez/EU-Energy-Map](https://github.com/kuranez/EU-Energy-Map)
 

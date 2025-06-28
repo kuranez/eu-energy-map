@@ -30,6 +30,10 @@ def load_data(
 
     if return_raw:
         return data, europe_gdf
+    
+    # Add ISO2_CODE column, replacing 'EL' with 'GR' for flag purposes
+    europe_gdf['ISO2_CODE'] = europe_gdf['CNTR_ID'].replace('EL', 'GR')
+    data['ISO2_CODE'] = data['geo'].replace('EL', 'GR')
 
     merged_data = europe_gdf.merge(data, left_on='CNTR_ID', right_on='geo')
 
@@ -50,10 +54,12 @@ def load_data(
     merged_data.drop(columns=['LAST UPDATE', 'freq', 'unit', 'OBS_FLAG'], inplace=True)
     merged_data[['Year', 'Renewable Percentage']] = merged_data[['Year', 'Renewable Percentage']].apply(pd.to_numeric)
     merged_data['Renewable Percentage'] = merged_data['Renewable Percentage'].round(1)
-    merged_data['Flag'] = merged_data['Code'].apply(iso2_to_flag)
+
+    # Add ISO2_Code for flag purposes (EL→GR), but keep Code as EL for plotting
+    merged_data['Flag'] = merged_data['ISO2_Code'].apply(iso2_to_flag)
 
     final_columns = [
         'Code', 'Flag', 'Country', 'Energy Type', 'Renewable Percentage', 'Year',
-        'CNTR_ID', 'ISO3_CODE', 'geometry'
+        'CNTR_ID', 'ISO2_Code', 'ISO3_CODE', 'geometry'
     ]
     return merged_data[final_columns]

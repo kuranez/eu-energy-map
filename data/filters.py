@@ -1,7 +1,7 @@
 # data/filters.py
 
 import pandas as pd
-from utils.flags import iso2_to_flag
+from utils.flags import add_country_flags
 
 # Preprocess the data to merge with Europe GeoDataFrame and clean up columns
 
@@ -22,7 +22,9 @@ def preprocess(data: pd.DataFrame, europe: pd.DataFrame) -> pd.DataFrame:
     merged.drop(columns=['LAST UPDATE', 'freq', 'unit', 'OBS_FLAG'], inplace=True)
     merged[['Year', 'Renewable Percentage']] = merged[['Year', 'Renewable Percentage']].apply(pd.to_numeric)
     merged['Renewable Percentage'] = merged['Renewable Percentage'].round(1)
-    merged['Flag'] = merged['Code'].apply(iso2_to_flag)
+    # Add ISO2_Code for flag purposes (EL→GR), but keep Code as EL for plotting
+    merged['ISO2_Code'] = merged['Code'].replace('EL', 'GR')
+    merged = add_country_flags(merged)
     return merged
 
 # Filter the data for EU countries and calculate average renewable percentage

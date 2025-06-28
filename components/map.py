@@ -23,6 +23,7 @@ def create_choropleth_map(df_year):
     Returns:
         fig (Figure): A Plotly Figure object containing the choropleth map.
     """
+
     fig = go.Figure(go.Choroplethmapbox(
         # Load the GeoJSON file for Europe
         geojson=json.load(open('./geo/europe.geojson')),

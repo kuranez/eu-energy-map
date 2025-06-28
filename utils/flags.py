@@ -15,3 +15,10 @@ def iso2_to_flag(iso2_code: str) -> str:
     if not isinstance(iso2_code, str) or len(iso2_code) != 2:
         return ""
     return chr(0x1F1E6 + ord(iso2_code[0].upper()) - ord('A')) + chr(0x1F1E6 + ord(iso2_code[1].upper()) - ord('A'))
+
+def add_country_flags(data):
+    """
+    Add country flags to the dataset using country codes.
+    """
+    data['Flag'] = data['ISO2_Code'].apply(iso2_to_flag)
+    return data

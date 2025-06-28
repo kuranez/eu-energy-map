@@ -1,9 +1,0 @@
-# List of Datasets
-
-nrg_ind_ren_linear.csv
-    - Share of energy from renewable sources
-    - Source: https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en
-
-nrg_ind_rfce_linear.csv
-    - Contribution of renewable fuels to gross final consumption of energy
-    - Source: https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_rfce/default/table?lang=en

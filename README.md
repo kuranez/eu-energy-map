@@ -24,8 +24,12 @@ pip install pandas geopandas panel plotly
 ```
 
 ## Data
-- Renewable energy data: `../data/nrg_ind_ren_linear.csv`
-- GeoJSON boundaries: `../geo/europe.geojson`
+- Renewable energy data: `./data/nrg_ind_ren_linear.csv`
+- GeoJSON boundaries: `./geo/europe.geojson`
+
+## Documentation & History
+- [Documentation](notebook/documentation.md)
+- [Changelog](notebook/changelog.md)
 
 ## Project Page
 - [GitHub: kuranez/EU-Energy-Map](https://github.com/kuranez/EU-Energy-Map)

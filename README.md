@@ -138,17 +138,17 @@ EU-Energy-Map/
 ├── components/
 │   ├── charts/
 │   │   ├── bar_chart_by_country.py  # Bar chart: Country vsU
-│   │   ├── bar_chart_by_year.py     # Bar chart: All countries by year
+│   │   └── bar_chart_by_year.py     # Bar chart: All countries by year
 │   ├── map.py                # Interactive choropleth map
-│   ├── widgets.py            # Dashboard widgets (sliders, selectors)
+│   └── widgets.py            # Dashboard widgets (sliders, selectors)
 ├── layout/
-│   ├── dashboard.py          # Layout composition for Panel
+│   └── dashboard.py          # Layout composition for Panel
 ├── utils/                    # Helper functions
 │   ├── colors.py             # Color scales & conversion
-│   ├── flags.py              # ISO2 code → emoji flag
+│   └── flags.py              # ISO2 code → emoji flag
 ├── assets/
 │   ├── europe-renewables-500px.png  # Dashboard image
-│   ├── logo-500px.png               # Logo
+│   └─── logo-500px.png               # Logo
 └── geo/
     └── europe.geojson        # European country boundaries (GeoJSON)
 ```

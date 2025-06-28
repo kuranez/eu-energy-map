@@ -176,6 +176,19 @@ You may modify, distribute, and use it freely in your own projects.
 
 ---
 
+## 📓 Jupyter Notebook Version (Previous Release)
+
+A standalone Jupyter Notebook version of the EU Energy Map dashboard is available from a previous release:
+
+> [**Download Notebook Release v1.1**](https://github.com/kuranez/eu-energy-map/releases/tag/nb-1.1)
+
+- Run the notebook locally to explore and visualize Eurostat renewable energy data without setting up the full web app.
+- Includes interactive charts and geospatial mapping using the same datasets.
+- Ideal for experimentation, prototyping, or educational use.
+
+
+---
+
 ## 🔗 Related Projects
 
 If you're working with Eurostat TSV datasets and need a tool for quick conversion to CSV, check out my companion project:

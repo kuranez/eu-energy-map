@@ -68,19 +68,19 @@ def process_energy_data(data: pd.DataFrame, **kwargs) -> pd.DataFrame
 **Estimated Effort**: 3-4 hours
 
 **Tasks**:
-- [ ] Implement `clean_columns()` function
-- [ ] Implement `convert_data_types()` function  
-- [ ] Implement `remap_country_codes()` function
-- [ ] Implement `add_country_flags()` function
+- [x] Implement `clean_columns()` function
+- [x] Implement `convert_data_types()` function  
+- [x] Implement `remap_country_codes()` function
+- [x] Implement `add_country_flags()` function
 - [ ] Add comprehensive error handling and logging
 
 ### Phase 2: Module Integration ⏳
 **Estimated Effort**: 2-3 hours
 
 **Tasks**:
-- [ ] Refactor `data/loader.py` to use new helpers
-- [ ] Refactor `data/filters.py` to use new helpers
-- [ ] Update imports and function calls
+- [x] Refactor `data/loader.py` to use new helpers
+- [x] Refactor `data/filters.py` to use new helpers
+- [x] Update imports and function calls
 - [ ] Maintain backward compatibility
 
 ### Phase 3: Pipeline Optimization ⏳

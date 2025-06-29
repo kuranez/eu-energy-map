@@ -13,9 +13,11 @@ import pandas as pd
 import geopandas as gpd
 
 # Custom utility functions
-from utils.flags import iso2_to_flag
-from utils.helpers import load_csv_data, load_gdf, merge_data, rename_columns
-from utils.mapping import ENERGY_TYPE_MAPPING
+from utils.helpers import (
+    load_csv_data, load_gdf, merge_data, rename_columns, 
+    clean_columns, convert_data_types, remap_country_codes, add_country_flags,
+    apply_energy_type_mapping
+)
 
 # Main function to load and preprocess data
 
@@ -36,20 +38,18 @@ def load_data(
 
     if return_raw:
         return data, europe_gdf
-
-    merged_data = merge_data(europe_gdf, data, 'CNTR_ID', 'geo')
+    
+    merged_data = remap_country_codes(data)
+    merged_data = merge_data(europe_gdf, merged_data, 'CNTR_ID', 'geo')
 
     merged_data = rename_columns(merged_data)
 
-    merged_data['Energy Type'] = merged_data['Energy Type'].replace(ENERGY_TYPE_MAPPING)
+    merged_data = apply_energy_type_mapping(merged_data)
 
-    merged_data.drop(columns=['LAST UPDATE', 'freq', 'unit', 'OBS_FLAG'], inplace=True)
-    merged_data[['Year', 'Renewable Percentage']] = merged_data[['Year', 'Renewable Percentage']].apply(pd.to_numeric)
-    merged_data['Renewable Percentage'] = merged_data['Renewable Percentage'].round(1)
-    # Remap 'EL' (used for Greece in some datasets) to 'GR' to ensure correct merging
-    merged_data['CNTR_ID'] = merged_data['CNTR_ID'].replace('EL', 'GR')
-    merged_data['Code'] = merged_data['Code'].replace('EL', 'GR')
-    merged_data['Flag'] = merged_data['Code'].apply(iso2_to_flag)
+    merged_data = clean_columns(merged_data)
+    merged_data = convert_data_types(merged_data, ['Year', 'Renewable Percentage'])
+
+    merged_data = add_country_flags(merged_data)
 
     final_columns = [
         'Code', 'Flag', 'Country', 'Energy Type', 'Renewable Percentage', 'Year',

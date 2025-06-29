@@ -1,41 +1,19 @@
 # utils/mapping.py
 
+import pandas as pd
+
+from config import (
+    ENERGY_TYPE_MAPPING,
+    COUNTRY_CODE_MAPPING,
+    EU_COUNTRIES,
+    COLUMN_MAPPING,
+    COLUMNS_TO_DROP
+)
+
 """
 Data mapping utilities for EU Energy Map project.
-Contains various mapping dictionaries and functions for data standardization.
+Contains various functions for data standardization.
 """
-
-# Energy type mappings from Eurostat codes to human-readable names
-ENERGY_TYPE_MAPPING = {
-    'REN': 'Renewable Energy Total',
-    'REN_ELC': 'Renewable Electricity',
-    'REN_HEAT_CL': 'Renewable Heating and Cooling',
-    'REN_TRA': 'Renewable Energy in Transport'
-}
-
-# Country code mappings for data standardization
-COUNTRY_CODE_MAPPING = {
-    'EL': 'GR'  # Greece: EL (Eurostat) -> GR (ISO standard)
-}
-
-# EU member countries (as of 2025)
-EU_COUNTRIES = {
-    "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", 
-    "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", 
-    "PL", "PT", "RO", "SK", "SI", "ES", "SE"
-}
-
-# Column mappings for data standardization
-COLUMN_MAPPING = {
-    'nrg_bal': 'Energy Type',
-    'TIME_PERIOD': 'Year',
-    'OBS_VALUE': 'Renewable Percentage',
-    'geo': 'Code',
-    'NAME_ENGL': 'Country'
-}
-
-# Columns to drop during data cleaning
-COLUMNS_TO_DROP = ['LAST UPDATE', 'freq', 'unit', 'OBS_FLAG']
 
 def get_energy_type_mapping(custom_mapping: dict | None = None) -> dict:
     """
@@ -107,3 +85,44 @@ def get_columns_to_drop(additional_columns: list | None = None) -> list:
     if additional_columns:
         columns.extend(additional_columns)
     return columns
+
+def apply_column_mapping(data: pd.DataFrame, custom_mapping: dict | None = None) -> pd.DataFrame:
+    """
+    Apply column mappings to the DataFrame.
+        
+    Args:
+        data (pd.DataFrame): DataFrame to apply mappings to
+        custom_mapping (dict, optional): Custom mapping to override defaults
+
+    Returns:
+        pd.DataFrame: DataFrame with column mappings applied
+    """
+    try:
+        mapping = get_column_mapping(custom_mapping)
+        data = data.rename(columns=mapping, errors='ignore')
+        return data
+    except Exception as e:
+        print(f"Error applying column mapping: {e}")
+        return data  # Return original data on error
+
+def apply_energy_type_mapping(data: pd.DataFrame, custom_mapping: dict | None = None, 
+                             column_name: str = 'Energy Type') -> pd.DataFrame:
+    """
+    Apply energy type mappings to the DataFrame.
+    
+    Args:
+        data (pd.DataFrame): DataFrame to apply mappings to
+        custom_mapping (dict, optional): Custom mapping to override defaults
+        column_name (str): Column name containing energy type codes
+        
+    Returns:
+        pd.DataFrame: DataFrame with energy type mappings applied
+    """
+    try:
+        if column_name in data.columns:
+            mapping = get_energy_type_mapping(custom_mapping)
+            data[column_name] = data[column_name].replace(mapping)
+        return data
+    except Exception as e:
+        print(f"Error applying energy type mapping: {e}")
+        return data  # Return original data on error

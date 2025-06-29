@@ -6,13 +6,7 @@ import pandas as pd
 import geopandas as gpd
 # import panel as pn  # Assuming you are using Panel for caching
 
-from utils.mapping import (
-    get_energy_type_mapping,
-    get_country_code_mapping,
-    get_eu_countries,
-    get_column_mapping,
-    get_columns_to_drop
-)
+from utils.mapping import get_columns_to_drop, get_eu_countries
 
 # Method List:
 # 1. load_csv_data: Simple CSV loading function
@@ -22,8 +16,7 @@ from utils.mapping import (
 # 5. merge_data: Function to merge Europe GeoDataFrame with CSV data
 # 6. convert_data_types: Function to convert specified columns to numeric and round values
 # 7. clean_columns: Function to clean the DataFrame by dropping unnecessary columns
-# 8. apply_energy_type_mapping: Function to apply energy type mappings to the DataFrame
-# 9. filter_eu_countries: Function to filter DataFrame to include only EU
+# 8. filter_eu_countries: Function to filter DataFrame to include only EU
 
 # Simple CSV loading function
 # @pn.cache
@@ -155,27 +148,6 @@ def clean_columns(data: pd.DataFrame, columns_to_drop: list[str] | None = None) 
         print(f"Error cleaning columns: {e}")
         return data  # Return original data on error
 
-def apply_energy_type_mapping(data: pd.DataFrame, custom_mapping: dict | None = None, 
-                             column_name: str = 'Energy Type') -> pd.DataFrame:
-    """
-    Apply energy type mappings to the DataFrame.
-    
-    Args:
-        data (pd.DataFrame): DataFrame to apply mappings to
-        custom_mapping (dict, optional): Custom mapping to override defaults
-        column_name (str): Column name containing energy type codes
-        
-    Returns:
-        pd.DataFrame: DataFrame with energy type mappings applied
-    """
-    try:
-        if column_name in data.columns:
-            mapping = get_energy_type_mapping(custom_mapping)
-            data[column_name] = data[column_name].replace(mapping)
-        return data
-    except Exception as e:
-        print(f"Error applying energy type mapping: {e}")
-        return data  # Return original data on error
 
 def filter_eu_countries(data: pd.DataFrame, code_column: str = 'Code', 
                         additional_countries: set | None = None) -> pd.DataFrame:

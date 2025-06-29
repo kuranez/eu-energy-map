@@ -1,19 +1,24 @@
 # app.py
 
+# Import necessary libraries
 import panel as pn
 import pandas as pd
 import geopandas as gpd
 
+# Import data loading and preprocessing functions
 from data.loader import load_data
 from data.filters import preprocess, filter_data
 
+# Import components for the dashboard
 from components.widgets import create_widgets
 from components.map import create_choropleth_map
 from components.charts.bar_chart_by_year import create_bar_chart_year 
 from components.charts.bar_chart_by_country import create_bar_chart_country
 
+# Import the layout builder
 from layout.dashboard import build_layout
 
+# Initialize Panel extension with required components
 pn.extension('tabulator', 'plotly', design='material', sizing_mode='stretch_width')
 
 # Load and preprocess data

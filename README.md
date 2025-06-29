@@ -1,14 +1,37 @@
 # EU Energy Map
 
+<p align="left">
+    <a href="https://www.python.org/" target="_blank">
+        <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
+    </a>
+    <a href="https://pandas.pydata.org/" target="_blank">
+        <img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas"/>
+    </a>
+    <a href="https://geopandas.org/" target="_blank">
+        <img src="https://img.shields.io/badge/Geopandas-008000?style=for-the-badge&logo=geopandas&logoColor=white" alt="Geopandas"/>
+    </a>
+    <a href="https://panel.holoviz.org/" target="_blank">
+        <img src="https://img.shields.io/badge/Holoviz%20Panel-0094A9?style=for-the-badge" alt="Holoviz Panel"/>
+    </a>
+    <a href="https://jupyter.org/" target="_blank">
+        <img src="https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white" alt="Jupyter"/>
+    </a>
+    <a href="https://docs.docker.com/" target="_blank">
+        <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker"/>
+    </a>
+</p>
+
 An interactive dashboard that visualizes Eurostat data on renewable energy developments across European countries. Built with Python and Panel, the web app provides an intuitive interface to explore renewable energy trends from 2004 to 2022.
 
 ## 🌐 Web App
 
-> 🟢 **[Live Demo Coming Soon]**
+> [![Live Demo](https://img.shields.io/badge/🟢%20Live%20App-%20EU--Energy--Map-0057B7?style=for-the-badge)](https://apps.kuracodez.space/eu-energy-map/app)
+>
+> **Try the app - explore renewable energy data for Europe directly in your browser.**
 
 ## Screenshot
 
-> ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/app.png|700x342](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/app.png)
+> ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/app.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/app.png)
 
 ---
 
@@ -28,12 +51,12 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 #### ➤ Renewable Energy Share Per Year
 ---
-![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/year_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/year_chart.png)
+![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/year_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/year_chart.png)
 
 ---
 #### ➤ Renewable Energy Share Per Country
 ---
-![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/country_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/layout/extra/images/screenshots/country_chart.png)
+![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/country_chart.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/country_chart.png)
 
 ---
 ### Recent Changes
@@ -104,30 +127,72 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 ## 📁 File Structure
 
-```
+```yaml
 EU-Energy-Map/
-│
+├── app.py                   # Main dashboard entry point
+├── config.py                # Configurations (tokens, paths, etc)
 ├── data/
-│   └── nrg_ind_ren_linear.csv
-├── geo/
-│   └── europe.geojson
-├── app.ipynb
-├── requirements.txt
-└── README.md
+│   ├── loader.py            # Loads and merges CSV/GeoJSON data
+│   ├── filters.py           # Preprocessing and filtering logic
+│   └── nrg_ind_ren_linear.csv   # Eurostat renewable energy data
+├── components/
+│   ├── charts/
+│   │   ├── bar_chart_by_country.py  # Bar chart: Country vsU
+│   │   └── bar_chart_by_year.py     # Bar chart: All countries by year
+│   ├── map.py                # Interactive choropleth map
+│   └── widgets.py            # Dashboard widgets (sliders, selectors)
+├── layout/
+│   └── dashboard.py          # Layout composition for Panel
+├── utils/                    # Helper functions
+│   ├── colors.py             # Color scales & conversion
+│   └── flags.py              # ISO2 code → emoji flag
+├── assets/
+│   ├── europe-renewables-500px.png  # Dashboard image
+│   └─── logo-500px.png               # Logo
+└── geo/
+    └── europe.geojson        # European country boundaries (GeoJSON)
 ```
 
 ---
-## 🔗 Related Projects
 
-If you're working with Eurostat TSV datasets and need a tool for quick conversion to CSV, check out my companion project:
+## 📙 Documentation
 
-➡️ **[TSV-CSV Converter](https://github.com/kuranez/TSV-CSV-Converter)** – A lightweight utility to convert Eurostat-style `.tsv` files into clean `.csv` format.
+**Code documentation is provided as a Jupyter notebook.**  
+You can view it here: [documentation.ipynb](documentation.ipynb) 
 
----
+
+## 📕 Resources
+
+> - [Holoviz Panel](https://panel.holoviz.org/) – A powerful Python framework for creating interactive web apps and dashboards, used for the UI in this project.
+> - [Pandas](https://pandas.pydata.org/) – Essential for data manipulation and analysis, enabling efficient handling of Eurostat datasets.
+> - [Geopandas](https://geopandas.org/) – Extends pandas to support geospatial data, making it easy to work with geographic boundaries and mapping.
+> - [Jupyter](https://jupyter.org/) - An interactive environment for running Python code in notebooks, ideal for experimentation, documentation, and prototyping scripts.
+> - [Docker Documentation](https://docs.docker.com/) -  Official guides for containerizing, deploying, and running this app consistently across different environments.
 
 ## 📘 License
 
 This project is open source and available under the **MIT License**. 
 You may modify, distribute, and use it freely in your own projects.
+
+---
+
+## 📓 Jupyter Notebook Version (Previous Release)
+
+A standalone Jupyter Notebook version of the EU Energy Map dashboard is available from a previous release:
+
+> [**Download Notebook Release v1.1**](https://github.com/kuranez/eu-energy-map/releases/tag/nb-1.1)
+
+- Run the notebook locally to explore and visualize Eurostat renewable energy data without setting up the full web app.
+- Includes interactive charts and geospatial mapping using the same datasets.
+- Ideal for experimentation, prototyping, or educational use.
+
+
+---
+
+## 🔗 Related Projects
+
+If you're working with Eurostat TSV datasets and need a tool for quick conversion to CSV, check out my companion project:
+
+➡️ **[TSV-CSV Converter](https://github.com/kuranez/TSV-CSV-Converter)** – A lightweight utility to convert Eurostat-style `.tsv` files into clean `.csv` format.
 
 ---

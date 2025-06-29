@@ -90,6 +90,8 @@ def create_bar_chart_year(df_year, year):
         xaxis_title=None,
         # Set y-axis title
         yaxis_title="Renewable Energy (%)",
+        # Set y-axis range
+        yaxis=dict(range=[0, 70]),
         # Set the color axis properties
         coloraxis=dict(
             colorscale=get_colorscale(),

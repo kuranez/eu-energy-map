@@ -16,9 +16,10 @@ def iso2_to_flag(iso2_code: str) -> str:
         return ""
     return chr(0x1F1E6 + ord(iso2_code[0].upper()) - ord('A')) + chr(0x1F1E6 + ord(iso2_code[1].upper()) - ord('A'))
 
+# Method to add country flags to a dataset
 def add_country_flags(data):
     """
     Add country flags to the dataset using country codes.
     """
-    data['Country Flag'] = data['Country Code'].apply(iso2_to_flag)
+    data['Flag'] = data['ISO2_Code'].apply(iso2_to_flag)
     return data

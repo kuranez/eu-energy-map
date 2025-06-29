@@ -1,0 +1,8 @@
+
+utils/__pycache__
+.ipynb_checkpoints
+components/__pycache__
+components/charts/__pycache__
+data/__pycache__
+__pycache__
+extensions

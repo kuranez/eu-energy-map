@@ -6,7 +6,10 @@ import geopandas as gpd
 import os
 from utils.helpers import (
     load_csv_data, load_gdf, load_geojson, 
-    merge_data, rename_columns, load_and_combine_csv_data
+    load_and_combine_csv_data
+)
+from utils.pd_helpers import (
+    merge_data, rename_columns
 )
 
 class TestHelperFunctions:

@@ -240,8 +240,6 @@ def rename_columns(data: pd.DataFrame, custom_mapping: dict | None = None) -> pd
         print(f"Error renaming columns: {e}")
         return data  # Return original data on error
 
-        return data  # Return original data on error
-
 # Function to convert columns to numeric and round values
 def convert_data_types(data: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     """

@@ -6,7 +6,7 @@ Currently, `data/filters.py` and `data/loader.py` contain redundant pandas opera
 
 ## 🎯 **Objectives**
 
-- [ ] Extract common pandas operations into reusable helper functions
+- [x] Extract common pandas operations into reusable helper functions
 - [ ] Eliminate code duplication between `filters.py` and `loader.py`
 - [ ] Improve testability by isolating data processing logic
 - [ ] Maintain backward compatibility with existing API

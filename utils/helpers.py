@@ -6,13 +6,24 @@ import pandas as pd
 import geopandas as gpd
 # import panel as pn  # Assuming you are using Panel for caching
 
+from utils.mapping import (
+    get_energy_type_mapping,
+    get_country_code_mapping,
+    get_eu_countries,
+    get_column_mapping,
+    get_columns_to_drop
+)
+
 # Method List:
 # 1. load_csv_data: Simple CSV loading function
 # 2. load_and_combine_csv_data: Enhanced CSV loading function that combines multiple files  
 # 3. load_geojson: Function to load GeoJSON data
 # 4. load_gdf: Function to load GeoJSON data as a GeoDataFrame
 # 5. merge_data: Function to merge Europe GeoDataFrame with CSV data
-# 6. rename_columns: Function to rename columns to standardized format
+# 6. convert_data_types: Function to convert specified columns to numeric and round values
+# 7. clean_columns: Function to clean the DataFrame by dropping unnecessary columns
+# 8. apply_energy_type_mapping: Function to apply energy type mappings to the DataFrame
+# 9. filter_eu_countries: Function to filter DataFrame to include only EU
 
 # Simple CSV loading function
 # @pn.cache
@@ -77,6 +88,7 @@ def load_gdf(file_path):
         print(f"Error loading GeoJSON as DataFrame: {e}")
         return None
 
+
 # Function to merge Europe GeoDataFrame with CSV data
 def merge_data(europe: pd.DataFrame, data: pd.DataFrame, 
                left_key: str = 'CNTR_ID', right_key: str = 'geo') -> pd.DataFrame:
@@ -99,35 +111,90 @@ def merge_data(europe: pd.DataFrame, data: pd.DataFrame,
         print(f"Error merging data: {e}")
         return pd.DataFrame()  # Return empty DataFrame on error
 
-# Function to rename columns to standardized format
-def rename_columns(data: pd.DataFrame, custom_mapping: dict | None = None) -> pd.DataFrame:
+# Function to convert specified columns to numeric and round values
+# @pn.cache
+def convert_data_types(data: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     """
-    Rename columns to standardized format for energy data.
+    Convert specified columns to numeric and round values.
     
     Args:
-        data (pd.DataFrame): DataFrame to rename columns for
-        custom_mapping (dict, optional): Custom column mapping to override defaults
+        data (pd.DataFrame): DataFrame to convert columns for
+        columns (list[str]): List of column names to convert
         
     Returns:
-        pd.DataFrame: DataFrame with renamed columns
+        pd.DataFrame: DataFrame with specified columns converted to numeric and rounded
     """
-    # Default column mapping
-    default_mapping = {
-        'nrg_bal': 'Energy Type',
-        'TIME_PERIOD': 'Year',
-        'OBS_VALUE': 'Renewable Percentage',
-        'geo': 'Code',
-        'NAME_ENGL': 'Country'
-    }
+    try:
+        for col in columns:
+            if col in data.columns:
+                data[col] = pd.to_numeric(data[col], errors='coerce').round(1)
+        return data
+    except Exception as e:
+        print(f"Error converting columns: {e}")
+        return data  # Return original data on error
+
+# Function to clean the DataFrame by dropping unnecessary columns
+# @pn.cache
+def clean_columns(data: pd.DataFrame, columns_to_drop: list[str] | None = None) -> pd.DataFrame:
+    """
+    Clean the DataFrame by dropping unnecessary columns.
     
-    # Use custom mapping if provided, otherwise use default
-    column_mapping = custom_mapping if custom_mapping else default_mapping
+    Args:
+        data (pd.DataFrame): DataFrame to clean
+        columns_to_drop (list[str], optional): List of column names to drop
+        
+    Returns:
+        pd.DataFrame: DataFrame with specified columns dropped
+    """
+    # Use centralized columns to drop
+    columns = get_columns_to_drop(columns_to_drop) if columns_to_drop else get_columns_to_drop()
     
     try:
-        # Create a copy to avoid modifying original data
-        renamed_data = data.copy()
-        renamed_data.rename(columns=column_mapping, inplace=True)
-        return renamed_data
+        return data.drop(columns=columns, errors='ignore')
     except Exception as e:
-        print(f"Error renaming columns: {e}")
+        print(f"Error cleaning columns: {e}")
+        return data  # Return original data on error
+
+def apply_energy_type_mapping(data: pd.DataFrame, custom_mapping: dict | None = None, 
+                             column_name: str = 'Energy Type') -> pd.DataFrame:
+    """
+    Apply energy type mappings to the DataFrame.
+    
+    Args:
+        data (pd.DataFrame): DataFrame to apply mappings to
+        custom_mapping (dict, optional): Custom mapping to override defaults
+        column_name (str): Column name containing energy type codes
+        
+    Returns:
+        pd.DataFrame: DataFrame with energy type mappings applied
+    """
+    try:
+        if column_name in data.columns:
+            mapping = get_energy_type_mapping(custom_mapping)
+            data[column_name] = data[column_name].replace(mapping)
+        return data
+    except Exception as e:
+        print(f"Error applying energy type mapping: {e}")
+        return data  # Return original data on error
+
+def filter_eu_countries(data: pd.DataFrame, code_column: str = 'Code', 
+                        additional_countries: set | None = None) -> pd.DataFrame:
+    """
+    Filter DataFrame to include only EU countries.
+    
+    Args:
+        data (pd.DataFrame): DataFrame to filter
+        code_column (str): Column name containing country codes
+        additional_countries (set, optional): Additional countries to include
+        
+    Returns:
+        pd.DataFrame: Filtered DataFrame with EU countries only
+    """
+    try:
+        if code_column in data.columns:
+            eu_countries = get_eu_countries(additional_countries)
+            return data[data[code_column].isin(eu_countries)]
+        return data
+    except Exception as e:
+        print(f"Error filtering EU countries: {e}")
         return data  # Return original data on error

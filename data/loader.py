@@ -18,12 +18,13 @@ from config import (
     EU_COUNTRIES,
     COLUMNS_TO_DROP
 )
-# Import utility functions for data processing
-from utils.helpers import load_csv_data, load_and_combine_csv_data, load_geojson
-from utils.helpers import load_gdf, merge_data, convert_data_types, clean_columns,filter_eu_countries
 
 # Custom utility function to convert ISO2 country code to flag emoji
 from utils.flags import iso2_to_flag
+
+# Import utility functions for data processing
+from utils.helpers import load_csv_data, load_gdf
+from utils.helpers import merge_data, convert_data_types, clean_columns,filter_eu_countries
 
 # Import mapping functions for column and energy type mappings
 from utils.mapping import apply_column_mapping, apply_energy_type_mapping

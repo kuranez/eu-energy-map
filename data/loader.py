@@ -12,8 +12,21 @@ import pandas as pd
 # GeoPandas for geographic data handling
 import geopandas as gpd
 
+# Import configuration settings from config module
+from config import (
+    COLUMN_MAPPING,
+    EU_COUNTRIES,
+    COLUMNS_TO_DROP
+)
+# Import utility functions for data processing
+from utils.helpers import load_csv_data, load_and_combine_csv_data, load_geojson
+from utils.helpers import load_gdf, merge_data, convert_data_types, clean_columns,filter_eu_countries
+
 # Custom utility function to convert ISO2 country code to flag emoji
 from utils.flags import iso2_to_flag
+
+# Import mapping functions for column and energy type mappings
+from utils.mapping import apply_column_mapping, apply_energy_type_mapping
 
 
 def load_data(
@@ -48,30 +61,35 @@ def load_data(
     data['ISO2_CODE'] = data['geo'].replace('EL', 'GR')
 
     # Merge the geographic data with the renewable energy data
-    merged_data = europe_gdf.merge(data, left_on='CNTR_ID', right_on='geo')
+    # merged_data = europe_gdf.merge(data, left_on='CNTR_ID', right_on='geo')
+    merged_data = merge_data(europe_gdf, data, left_key='CNTR_ID', right_key='geo')
 
     # Rename columns for clarity
-    merged_data.rename(columns={
-        'nrg_bal': 'Energy Type', 'TIME_PERIOD': 'Year',
-        'OBS_VALUE': 'Renewable Percentage', 'geo': 'Code',
-        'NAME_ENGL': 'Country'
-    }, inplace=True)
+    # merged_data.rename(columns={
+    #     'nrg_bal': 'Energy Type', 'TIME_PERIOD': 'Year',
+    #     'OBS_VALUE': 'Renewable Percentage', 'geo': 'Code',
+    #     'NAME_ENGL': 'Country'
+    # }, inplace=True)
+    merged_data = apply_column_mapping(merged_data, custom_mapping=COLUMN_MAPPING)
 
     # Map energy types to more descriptive names
-    energy_type_map = {
-        'REN': 'Renewable Energy Total',
-        'REN_ELC': 'Renewable Electricity',
-        'REN_HEAT_CL': 'Renewable Heating and Cooling',
-        'REN_TRA': 'Renewable Energy in Transport'
-    }
-    merged_data['Energy Type'] = merged_data['Energy Type'].replace(energy_type_map)
-    
+    # energy_type_map = {
+    #     'REN': 'Renewable Energy Total',
+    #     'REN_ELC': 'Renewable Electricity',
+    #     'REN_HEAT_CL': 'Renewable Heating and Cooling',
+    #     'REN_TRA': 'Renewable Energy in Transport'
+    # }
+    # merged_data['Energy Type'] = merged_data['Energy Type'].replace(energy_type_map)
+    merged_data = apply_energy_type_mapping(merged_data)
+
     # Drop unnecessary columns
-    merged_data.drop(columns=['LAST UPDATE', 'freq', 'unit', 'OBS_FLAG'], inplace=True)
+    # merged_data.drop(columns=['LAST UPDATE', 'freq', 'unit', 'OBS_FLAG'], inplace=True)
+    merged_data = clean_columns(merged_data)
    
     # Convert Year and Renewable Percentage to numeric and round
-    merged_data[['Year', 'Renewable Percentage']] = merged_data[['Year', 'Renewable Percentage']].apply(pd.to_numeric)
-    merged_data['Renewable Percentage'] = merged_data['Renewable Percentage'].round(1)
+    merged_data = convert_data_types(merged_data, columns=['Year', 'Renewable Percentage'])
+    # merged_data[['Year', 'Renewable Percentage']] = merged_data[['Year', 'Renewable Percentage']].apply(pd.to_numeric)
+    # merged_data['Renewable Percentage'] = merged_data['Renewable Percentage'].round(1)
 
     # Add ISO2_Code for flag purposes (EL→GR), but keep Code as EL for plotting
     merged_data['Flag'] = merged_data['ISO2_Code'].apply(iso2_to_flag)

@@ -38,7 +38,7 @@ COUNTRY_CODE_MAPPING = {
 # EU member countries (as of 2025)
 EU_COUNTRIES = {
     "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", 
-    "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", 
+    "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", 
     "PL", "PT", "RO", "SK", "SI", "ES", "SE"
 }
 

@@ -78,9 +78,9 @@ def process_energy_data(data: pd.DataFrame, **kwargs) -> pd.DataFrame
 **Estimated Effort**: 2-3 hours
 
 **Tasks**:
-- [ ] Refactor `data/loader.py` to use new helpers
-- [ ] Refactor `data/filters.py` to use new helpers
-- [ ] Update imports and function calls
+- [x] Refactor `data/loader.py` to use new helpers
+- [x] Refactor `data/filters.py` to use new helpers
+- [x] Update imports and function calls
 - [x] Maintain backward compatibility
 
 ### Phase 3: Pipeline Optimization ⏳

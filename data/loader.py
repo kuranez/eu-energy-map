@@ -23,8 +23,7 @@ from config import (
 from utils.flags import iso2_to_flag
 
 # Import utility functions for data processing
-from utils.helpers import load_csv_data, load_gdf
-from utils.helpers import merge_data, convert_data_types, clean_columns,filter_eu_countries
+from utils.helpers import merge_data, convert_data_types, clean_columns,add_iso2_code_column
 
 # Import mapping functions for column and energy type mappings
 from utils.mapping import apply_column_mapping, apply_energy_type_mapping
@@ -93,7 +92,7 @@ def load_data(
     # merged_data['Renewable Percentage'] = merged_data['Renewable Percentage'].round(1)
 
     # Add ISO2_Code for flag purposes (EL→GR), but keep Code as EL for plotting
-    merged_data['Flag'] = merged_data['ISO2_Code'].apply(iso2_to_flag)
+    merged_data = add_iso2_code_column(merged_data)
 
     # Define the final columns to return
     final_columns = [

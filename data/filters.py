@@ -2,7 +2,7 @@
 
 import pandas as pd
 from utils.flags import add_country_flags
-from utils.helpers import merge_data, convert_data_types, clean_columns, filter_eu_countries
+from utils.helpers import merge_data, convert_data_types, clean_columns, filter_eu_countries, add_iso2_code_column
 from utils.mapping import apply_column_mapping, apply_energy_type_mapping, get_eu_countries
 from config import COLUMN_MAPPING
 
@@ -29,7 +29,8 @@ def preprocess(data: pd.DataFrame, europe: pd.DataFrame) -> pd.DataFrame:
     merged = convert_data_types(merged, columns=['Year', 'Renewable Percentage'])
     
     # Add ISO2_Code for flag purposes (EL→GR), but keep Code as EL for plotting
-    merged['ISO2_Code'] = merged['Code'].replace('EL', 'GR')
+    merged = add_iso2_code_column(merged)
+    
     # Add country flags based on ISO2_Code
     merged = add_country_flags(merged)
     return merged

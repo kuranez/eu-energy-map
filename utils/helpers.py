@@ -170,3 +170,25 @@ def filter_eu_countries(data: pd.DataFrame, code_column: str = 'Code',
     except Exception as e:
         print(f"Error filtering EU countries: {e}")
         return data  # Return original data on error
+
+def add_iso2_code_column(data: pd.DataFrame, source_column: str = 'Code', 
+                        target_column: str = 'ISO2_Code') -> pd.DataFrame:
+    """
+    Add ISO2_Code column for flag purposes, converting EL→GR while keeping original codes intact.
+    
+    Args:
+        data (pd.DataFrame): DataFrame to add ISO2_Code column to
+        source_column (str): Column name containing original country codes
+        target_column (str): Column name for the new ISO2_Code column
+        
+    Returns:
+        pd.DataFrame: DataFrame with ISO2_Code column added
+    """
+    try:
+        if source_column in data.columns:
+            # Convert EL→GR for flag display purposes, keep other codes as-is
+            data[target_column] = data[source_column].replace('EL', 'GR')
+        return data
+    except Exception as e:
+        print(f"Error adding ISO2_Code column: {e}")
+        return data  # Return original data on error

@@ -16,7 +16,10 @@ from utils.mapping import get_columns_to_drop, get_eu_countries
 # 5. merge_data: Function to merge Europe GeoDataFrame with CSV data
 # 6. convert_data_types: Function to convert specified columns to numeric and round values
 # 7. clean_columns: Function to clean the DataFrame by dropping unnecessary columns
-# 8. filter_eu_countries: Function to filter DataFrame to include only EU
+# 8. add_iso2_code_column: Function to add ISO2_Code column for flag purposes
+# 9. add_iso2_code_columns: Function to add ISO2_CODE columns to both GeoDataFrame and DataFrame for flag purposes
+# 10. filter_eu_countries: Function to filter DataFrame to include only EU
+
 
 # Simple CSV loading function
 # @pn.cache
@@ -83,6 +86,7 @@ def load_gdf(file_path):
 
 
 # Function to merge Europe GeoDataFrame with CSV data
+# @pn.cache
 def merge_data(europe: pd.DataFrame, data: pd.DataFrame, 
                left_key: str = 'CNTR_ID', right_key: str = 'geo') -> pd.DataFrame:
     """
@@ -148,7 +152,63 @@ def clean_columns(data: pd.DataFrame, columns_to_drop: list[str] | None = None) 
         print(f"Error cleaning columns: {e}")
         return data  # Return original data on error
 
+# Function to add ISO2_Code column for flag purposes
+# @pn.cache
+def add_iso2_code_column(data: pd.DataFrame, source_column: str = 'Code', 
+                        target_column: str = 'ISO2_Code') -> pd.DataFrame:
+    """
+    Add ISO2_Code column for flag purposes, converting EL→GR while keeping original codes intact.
+    
+    Args:
+        data (pd.DataFrame): DataFrame to add ISO2_Code column to
+        source_column (str): Column name containing original country codes
+        target_column (str): Column name for the new ISO2_Code column
+        
+    Returns:
+        pd.DataFrame: DataFrame with ISO2_Code column added
+    """
+    try:
+        if source_column in data.columns:
+            # Convert EL→GR for flag display purposes, keep other codes as-is
+            data[target_column] = data[source_column].replace('EL', 'GR')
+        return data
+    except Exception as e:
+        print(f"Error adding ISO2_Code column: {e}")
+        return data  # Return original data on error
 
+# Function to add ISO2_CODE columns to both GeoDataFrame and DataFrame for flag purposes
+# @pn.cache
+def add_iso2_code_columns(europe_gdf: gpd.GeoDataFrame, data: pd.DataFrame, 
+                         geo_source_col: str = 'CNTR_ID', data_source_col: str = 'geo') -> tuple[gpd.GeoDataFrame, pd.DataFrame]:
+    """
+    Add ISO2_CODE columns to both GeoDataFrame and DataFrame for flag purposes.
+    Converts EL→GR while keeping original columns intact.
+    
+    Args:
+        europe_gdf (gpd.GeoDataFrame): Geographic data
+        data (pd.DataFrame): Energy data
+        geo_source_col (str): Source column in GeoDataFrame for ISO2_CODE conversion
+        data_source_col (str): Source column in DataFrame for ISO2_CODE conversion
+        
+    Returns:
+        tuple: Updated (europe_gdf, data) with ISO2_CODE columns added
+    """
+    try:
+        # Add ISO2_CODE column to GeoDataFrame (EL→GR for flag purposes)
+        if geo_source_col in europe_gdf.columns:
+            europe_gdf['ISO2_CODE'] = europe_gdf[geo_source_col].replace('EL', 'GR')
+        
+        # Add ISO2_CODE column to data DataFrame (EL→GR for flag purposes)
+        if data_source_col in data.columns:
+            data['ISO2_CODE'] = data[data_source_col].replace('EL', 'GR')
+            
+        return europe_gdf, data
+    except Exception as e:
+        print(f"Error adding ISO2_CODE columns: {e}")
+        return europe_gdf, data  # Return original data on error
+
+# Function to filter DataFrame to include only EU countries
+# @pn.cache
 def filter_eu_countries(data: pd.DataFrame, code_column: str = 'Code', 
                         additional_countries: set | None = None) -> pd.DataFrame:
     """
@@ -171,24 +231,5 @@ def filter_eu_countries(data: pd.DataFrame, code_column: str = 'Code',
         print(f"Error filtering EU countries: {e}")
         return data  # Return original data on error
 
-def add_iso2_code_column(data: pd.DataFrame, source_column: str = 'Code', 
-                        target_column: str = 'ISO2_Code') -> pd.DataFrame:
-    """
-    Add ISO2_Code column for flag purposes, converting EL→GR while keeping original codes intact.
-    
-    Args:
-        data (pd.DataFrame): DataFrame to add ISO2_Code column to
-        source_column (str): Column name containing original country codes
-        target_column (str): Column name for the new ISO2_Code column
-        
-    Returns:
-        pd.DataFrame: DataFrame with ISO2_Code column added
-    """
-    try:
-        if source_column in data.columns:
-            # Convert EL→GR for flag display purposes, keep other codes as-is
-            data[target_column] = data[source_column].replace('EL', 'GR')
-        return data
-    except Exception as e:
-        print(f"Error adding ISO2_Code column: {e}")
-        return data  # Return original data on error
+
+

@@ -23,12 +23,12 @@ from config import (
 from utils.flags import iso2_to_flag
 
 # Import utility functions for data processing
-from utils.helpers import merge_data, convert_data_types, clean_columns,add_iso2_code_column
+from utils.helpers import merge_data, convert_data_types, clean_columns, add_iso2_code_column, add_iso2_code_columns
 
 # Import mapping functions for column and energy type mappings
 from utils.mapping import apply_column_mapping, apply_energy_type_mapping
 
-
+# Define the main function to load and preprocess renewable energy data for Europe
 def load_data(
     data_path: str = './data/nrg_ind_ren_linear.csv',
     geo_path: str = './geo/europe.geojson',
@@ -56,9 +56,8 @@ def load_data(
     if return_raw:
         return data, europe_gdf
     
-    # Add ISO2_CODE column, replacing 'EL' with 'GR' for flag purposes
-    europe_gdf['ISO2_CODE'] = europe_gdf['CNTR_ID'].replace('EL', 'GR')
-    data['ISO2_CODE'] = data['geo'].replace('EL', 'GR')
+    # Add ISO2_CODE columns for flag purposes (EL→GR conversion)
+    europe_gdf, data = add_iso2_code_columns(europe_gdf, data)
 
     # Merge the geographic data with the renewable energy data
     # merged_data = europe_gdf.merge(data, left_on='CNTR_ID', right_on='geo')

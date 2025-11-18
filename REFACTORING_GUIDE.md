@@ -1,4 +1,4 @@
-# EU Energy Map - Refactoring Guide
+´# EU Energy Map - Refactoring Guide
 
 ## 📋 Quick Overview
 

@@ -5,148 +5,136 @@ All notable changes to the EU Energy Map project will be documented in this file
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 2025-01-27
+## [Unreleased] - 2025-11-18
 
 ### Added
-- **Comprehensive Testing Infrastructure** (`test/`)
-  - `test/conftest.py` - Enhanced test fixtures with sample data generators and real data integration
-  - `test/test_loader.py` - Complete test suite for data loading functionality (15 tests)
-  - `test/test_filters.py` - Comprehensive tests for data filtering and preprocessing (13 tests)
-  - `test/test_helpers.py` - Unit and integration tests for helper functions (13 tests)
-  - `test/run_tests.py` - Automated test runner with coverage reporting and error handling
-  - `test/validate_setup.py` - Simple validation script without pytest dependencies
-  - `test/requirements.txt` - Testing dependencies specification
-  - `test/README.md` - Testing pipeline documentation and usage guide
-  - `test/TEST_SUCCESS.md` - Current test status report and validation results
-  - `TESTING.md` - Complete testing documentation, guidelines, and best practices
+- **Simplified Testing Infrastructure** (`test/`)
+  - `test/validate_setup.py` - Lightweight, self-contained validation script
+  - `test/requirements.txt` - Optional advanced testing dependencies (pytest, coverage tools)
+  - `test/README.md` - Testing pipeline documentation
+  - `TESTING.md` - Complete testing guide with validation approach
 
-- **Centralized Helper Functions** (`utils/helpers.py`)
-  - `load_csv_data()` - Enhanced CSV loading with error handling and validation
-  - `load_gdf()` - GeoDataFrame loading with error handling
-  - `merge_data()` - Centralized data merging with comprehensive error handling
-  - `rename_columns()` - Standardized column renaming with custom mapping support
-  - Complete error handling and validation for all data operations
+- **Enhanced Helper Functions** (`utils/helpers.py`)
+  - `add_iso2_code_column()` - Add ISO2_Code column for flag display (EL→GR conversion)
+  - `add_iso2_code_columns()` - Batch ISO2_CODE column addition for both GeoDataFrame and DataFrame
+  - `merge_data()` - Centralized data merging with error handling
+  - `convert_data_types()` - Numeric conversion and rounding for data columns
+  - `clean_columns()` - Drop unnecessary columns from DataFrames
+  - `filter_eu_countries()` - Filter data for EU countries only
 
-- **Data Mapping Module** (`utils/mapping.py`)
-  - `ENERGY_TYPE_MAPPING` - Centralized energy type code mappings
-  - `COUNTRY_CODE_MAPPING` - Country code standardization (EL → GR)
-  - `EU_COUNTRIES` - Set of EU member country codes for validation
-  - `COLUMN_MAPPING` - Default column renaming mappings
-  - Helper functions with customization support for all mappings
-
-- **Enhanced Flag Utilities** (`utils/flags.py`)
-  - `add_country_flags()` - Country flag URL generation
-  - `get_flag_url()` - Individual country flag URL helper
-  - Integration with EU country validation
-
-- **Documentation Updates**
-  - `REFACTORING_GUIDE.md` - Comprehensive overview of current state and future roadmap
-  - `CHANGELOG.md` - Complete project history and current state documentation
-  - Updated project documentation with testing best practices and contributor guidelines
+- **Data Mapping Enhancements** (`utils/mapping.py`)
+  - `apply_column_mapping()` - Apply column renaming with custom mapping support
+  - `apply_energy_type_mapping()` - Apply energy type descriptions
+  - `get_eu_countries()` - Retrieve EU countries set from config
 
 ### Changed
+- **Greece Country Code Handling** - **CRITICAL FIX**
+  - **Problem**: Greece was not appearing on the map due to country code mismatch
+  - **Root Cause**: Data uses `EL` for Greece, but conversion to `GR` broke GeoJSON matching
+  - **Solution**: Keep `EL` throughout data pipeline, only convert to `GR` for flag display
+  - Updated `data/loader.py` to preserve `EL` in data and GeoJSON
+  - Updated `data/filters.py` to use `add_iso2_code_column()` helper for flag conversion
+  - GeoJSON uses `CNTR_ID='EL'`, data uses `geo='EL'` - now properly matched
+  - Flag display correctly uses `GR` code via `add_iso2_code_column()` helper
+
+- **Simplified Testing Approach**
+  - Removed complex pytest test suite (conftest.py, test_loader.py, test_filters.py, etc.)
+  - Replaced with single `validate_setup.py` script for quick validation
+  - No pytest required for basic validation (optional for advanced testing)
+  - Three simple checks: imports, data files, functionality
+  - Fast execution (completes in seconds)
+  - Auto-detects project root and handles paths automatically
+  - Clear visual feedback with ✅/❌ status indicators
+
+- **Refactored Data Processing** (`data/filters.py`)
+  - Replaced inline merge with `merge_data()` helper
+  - Replaced inline column mapping with `apply_column_mapping()` using `COLUMN_MAPPING` from config
+  - Replaced inline energy type mapping with `apply_energy_type_mapping()`
+  - Replaced inline column dropping with `clean_columns()`
+  - Replaced inline data type conversion with `convert_data_types()`
+  - Replaced hardcoded EU countries set with `filter_eu_countries()` helper
+  - All mappings now come from centralized `config.py` and `utils/mapping.py`
+
 - **Refactored Data Loading** (`data/loader.py`)
-  - Replaced direct `pd.read_csv()` calls with centralized `load_csv_data()` helper
-  - Replaced direct `gpd.read_file()` calls with `load_gdf()` helper
-  - Replaced inline merging operations with `merge_data()` helper
-  - Replaced inline column renaming with `rename_columns()` helper
-  - Integrated centralized `ENERGY_TYPE_MAPPING` from mapping module
-  - Added comprehensive error handling for all data loading operations
-  - Maintained complete backward compatibility with existing API
+  - Removed EL→GR conversion in merge process (preserves original codes)
+  - Added `add_iso2_code_columns()` helper for ISO2_CODE column creation
+  - Uses `merge_data()` helper for consistent merging
+  - Uses `apply_column_mapping()` for column renaming
+  - Uses `apply_energy_type_mapping()` for energy type descriptions
+  - Uses `clean_columns()` for column cleanup
+  - Uses `convert_data_types()` for numeric conversions
+  - Uses `add_iso2_code_column()` for final ISO2_Code addition
 
-- **Optimized Data Filtering** (`data/filters.py`)
-  - Replaced direct merging with centralized `merge_data()` helper function
-  - Replaced inline column renaming with `rename_columns()` helper
-  - Integrated centralized `ENERGY_TYPE_MAPPING` from mapping module
-  - Added imports for centralized helper functions and mapping constants
-  - Improved code consistency and maintainability
-
-- **Enhanced Error Handling**
-  - Added comprehensive null checks for all loaded data
-  - Improved error messages with context and suggestions
-  - Added graceful degradation for failed operations
-  - Implemented consistent error handling patterns across all modules
+### Fixed
+- **Greece Map Display Issue** - Greece now correctly appears on the map
+  - Root cause: Country code conversion from `EL` to `GR` broke GeoJSON matching
+  - Solution: Preserve `EL` internally, convert only for flag display
+  - Data merging now works correctly with both datasets using `EL`
+  - Flag display properly shows Greek flag 🇬🇷 using `GR` code
 
 ### Improved
-- **Code Quality and Structure**
-  - **41 tests passing, 0 failures** with comprehensive coverage of current functionality
-  - Class-based test organization for better maintainability
-  - Parametrized tests for comprehensive scenario coverage
-  - Complete error handling and edge case testing
-  - Integration tests for end-to-end pipeline validation
-  - Sample data fixtures for controlled testing environments
-  - Real data testing with graceful fallback when files are missing
+- **Code Modularity**
+  - All data processing functions now use centralized helpers
+  - Zero code duplication for common operations
+  - Single source of truth for all mappings in `config.py`
+  - Consistent error handling patterns across modules
+  - Clean separation of concerns
 
-- **Development Workflow**
-  - Automated test execution with detailed coverage reporting
-  - HTML coverage reports for visual analysis
-  - Test runner script with progress tracking and error handling
-  - Simple validation script for quick setup verification
-  - Pre-configured testing dependencies and requirements
-  - CI/CD ready test structure for automated deployment
+- **Configuration Management**
+  - `COLUMN_MAPPING` centralized in `config.py`
+  - `ENERGY_TYPE_MAPPING` in `utils/mapping.py`
+  - `EU_COUNTRIES` set in `utils/mapping.py`
+  - `COLUMNS_TO_DROP` in `config.py`
+  - All hardcoded values removed from processing code
 
-- **Code Modularity and Maintainability**
-  - Separated concerns between loading, processing, and filtering
-  - Centralized common operations in reusable helper functions
-  - Centralized data mappings in dedicated mapping module
-  - Eliminated code duplication across all modules
-  - Single source of truth for data loading operations
-  - Single source of truth for data mappings and constants
-  - Consistent error handling patterns throughout codebase
-  - Standardized column naming conventions
+- **Testing and Validation**
+  - Lightweight validation script (no framework overhead)
+  - Self-contained checks with clear feedback
+  - Fast execution for quick verification
+  - Suitable for CI/CD integration (exit codes 0/1)
+  - Optional pytest support for advanced testing needs
 
-### Testing Coverage Summary
-- **Unit Tests**: Individual helper function testing (load_csv_data, load_gdf, merge_data, rename_columns, flag utilities)
-- **Integration Tests**: Full pipeline testing with real project data and sample data
-- **Error Testing**: Comprehensive edge cases and error condition validation (missing files, invalid data, malformed inputs)
-- **Fixtures**: Reusable test data and utilities (raw_data, sample_csv_data, sample_geo_data, temp file management)
-- **Coverage**: HTML and terminal coverage reports with detailed metrics
-- **Validation**: Simple setup validation without pytest dependencies for quick verification
+### Documentation Updates
+- Updated `TESTING.md` with simplified validation approach
+- Clarified testing philosophy: lightweight, fast, self-contained
+- Added troubleshooting section for common validation issues
+- Documented optional pytest usage for advanced testing
+- Added validation script details and exit codes
 
-### Current Implementation Status
-- ✅ **41 tests passing, 0 failures** - Complete test coverage
-- ✅ **Data loading and basic processing** - Fully implemented and tested
-- ✅ **Helper function centralization** - Core utilities modularized
-- ✅ **Mapping centralization** - All mappings in dedicated module
-- ✅ **Error handling** - Comprehensive error handling throughout
-- ✅ **Testing infrastructure** - Complete test suite with fixtures and utilities
-- ✅ **Documentation** - Up-to-date guides, changelog, and testing docs
-- ✅ **CI/CD ready** - Test structure ready for automated deployment
-- ✅ **Real data integration** - Tests work with actual project data files
+### Technical Details
 
-### Pending Refactoring Tasks
-Based on `ISSUE_PANDAS_REFACTOR.md` and `REFACTORING_GUIDE.md`, the following pandas operations are identified for future centralization:
-
-#### High Priority (Next Phase)
-- `clean_columns()` - Column cleaning and standardization
-- `convert_data_types()` - Data type conversion and validation  
-- `remap_country_codes()` - Advanced country code processing
-- `process_energy_data()` - Energy-specific data transformations
-
-#### Medium Priority
-- Advanced data validation rules
-- Performance optimization for large datasets
-- Caching layer for frequently loaded data
-- Database connectivity options
-
-#### Low Priority  
-- Async/parallel processing support
-- Real-time data streaming capabilities
-- Advanced analytics helpers
-
-### Architecture Notes
+#### Country Code Flow (EL/GR Handling)
 ```
-Current Architecture (Implemented):
-utils/helpers.py     → Basic data operations (load, merge, rename)
-utils/mapping.py     → Constants and mappings (energy types, countries, columns)
-utils/flags.py       → Country flag utilities (add_country_flags, get_flag_url)
-data/loader.py       → Refactored to use centralized helpers
-data/filters.py      → Refactored to use centralized helpers
+Data Source (CSV)       → Uses 'EL' for Greece
+GeoJSON (europe.geojson) → Uses 'EL' for Greece (CNTR_ID)
+Merging                 → Both use 'EL', merge successful ✅
+Processing              → Preserves 'EL' in 'Code' column
+ISO2_Code Addition      → Creates ISO2_Code='GR' for flags only
+Flag Display            → Uses 'GR' to show 🇬🇷 emoji
+Map Rendering           → Uses 'Code'='EL' to match GeoJSON ✅
+```
 
-Future Architecture (Planned):
-utils/helpers.py     → Extended with all pandas operations
-utils/validation.py  → Data validation and quality checks
-utils/performance.py → Performance optimization utilities
+#### Helper Function Architecture
+```
+utils/helpers.py
+├── merge_data()                 # Centralized merging
+├── convert_data_types()         # Numeric conversion
+├── clean_columns()              # Column cleanup
+├── filter_eu_countries()        # EU filtering
+├── add_iso2_code_column()       # Single ISO2_Code addition
+└── add_iso2_code_columns()      # Batch ISO2_CODE addition
+
+utils/mapping.py
+├── apply_column_mapping()       # Column renaming
+├── apply_energy_type_mapping()  # Energy type descriptions
+├── get_eu_countries()           # EU countries retrieval
+├── ENERGY_TYPE_MAPPING          # Energy type constants
+└── EU_COUNTRIES                 # EU country codes
+
+config.py
+├── COLUMN_MAPPING               # Column rename mapping
+├── EU_COUNTRIES                 # EU country code set
+└── COLUMNS_TO_DROP              # Columns to remove
 ```
 
 ---

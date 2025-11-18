@@ -1,355 +1,181 @@
 # Testing Guide for EU Energy Map
 
-This document provides comprehensive information about testing the EU Energy Map project.
+This document provides information about validating and testing the EU Energy Map project.
 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
-- [Test Structure](#test-structure)
-- [Running Tests](#running-tests)
-- [Test Coverage](#test-coverage)
-- [Writing Tests](#writing-tests)
-- [Continuous Integration](#continuous-integration)
+- [Quick Validation](#quick-validation)
+- [Validation Structure](#validation-structure)
+- [Running Validation](#running-validation)
+- [Advanced Testing](#advanced-testing)
 - [Troubleshooting](#troubleshooting)
 
 ## 🎯 Overview
 
-The EU Energy Map project uses **pytest** as the primary testing framework. Tests are organized to ensure data integrity, function reliability, and system robustness.
+The EU Energy Map project uses a **lightweight validation approach** for quick setup verification. The validation script checks core functionality without requiring external testing frameworks.
 
-### Testing Philosophy
+### Validation Philosophy
 
-- **Unit Tests**: Test individual functions and methods
-- **Integration Tests**: Test data pipeline and component interaction
-- **Data Validation**: Ensure data quality and consistency
-- **Error Handling**: Test edge cases and error conditions
+- **Simplicity**: No external dependencies beyond project requirements
+- **Fast Feedback**: Quick checks for imports, data files, and basic functionality
+- **Self-Contained**: Single script validates entire setup
+- **Zero Config**: Works out-of-the-box without additional setup
 
-## 📁 Test Structure
+## 📁 Validation Structure
 
 ```
 test/
-├── conftest.py           # Test fixtures and configuration
-├── test_loader.py        # Tests for data loading functionality
-├── test_filters.py       # Tests for data filtering functionality
-├── test_helpers.py       # Tests for utility helper functions
-├── requirements.txt      # Testing dependencies
-├── run_tests.py         # Test runner script
-├── validate_setup.py    # Simple validation without pytest
-├── README.md            # Testing pipeline summary
-└── TEST_SUCCESS.md      # Current test status report
+├── validate_setup.py    # Standalone validation script
+├── requirements.txt     # Optional: Advanced testing dependencies
+└── README.md           # Testing documentation
 ```
 
-### Test Files Description
+### Validation Script Overview
 
-| File | Purpose | Coverage |
-|------|---------|----------|
-| `conftest.py` | Shared fixtures and test configuration | Test data setup |
-| `test_loader.py` | Data loading and processing tests | `data/loader.py` |
-| `test_filters.py` | Data filtering and preprocessing tests | `data/filters.py` |
-| `test_helpers.py` | Helper function unit and integration tests | `utils/helpers.py` |
-| `run_tests.py` | Automated test runner with coverage | All test execution |
-| `validate_setup.py` | Basic validation without pytest | Quick setup check |
+**`validate_setup.py`** - Comprehensive setup validation:
+- ✅ **Import Checks**: Verifies all modules can be imported
+- ✅ **File Validation**: Confirms required data files exist
+- ✅ **Functionality Tests**: Tests core data loading and processing
+- ✅ **Flag Conversion**: Validates country flag emoji generation
+- ✅ **Data Pipeline**: Ensures end-to-end processing works
 
-## 🚀 Running Tests
+## 🚀 Running Validation
 
-### Prerequisites
+### Quick Start
 
-Install testing dependencies:
+The simplest way to validate your setup:
+
+```bash
+# From project root
+cd /home/kuranez/Projects/Python/Geo/EU-Energy-Map
+python test/validate_setup.py
+```
+
+Or from the test directory:
+
+```bash
+cd test/
+python validate_setup.py
+```
+
+### What Gets Validated
+
+The validation script performs three main checks:
+
+#### 1. Import Checks 🔍
+Verifies all required modules can be imported:
+- `data.loader.load_data`
+- `data.filters.preprocess`, `filter_data`
+- `utils.flags.iso2_to_flag`
+
+#### 2. Data File Validation 📁
+Confirms required data files exist:
+- `./data/nrg_ind_ren_linear.csv` - Renewable energy data
+- `./geo/europe.geojson` - European geographic boundaries
+
+#### 3. Functionality Tests 🧪
+Tests core application features:
+- **Flag Conversion**: `iso2_to_flag("DE")` → `🇩🇪`
+- **Data Loading**: Loads and validates merged DataFrame
+- **Column Validation**: Ensures `Flag` column exists
+- **Raw Data Loading**: Tests GeoDataFrame return functionality
+
+### Expected Output
+
+Successful validation shows:
+
+```
+🧪 EU Energy Map - Test Validation
+==================================================
+🔍 Checking imports...
+✅ All imports successful
+
+🔍 Checking data files...
+✅ All required files found
+
+🧪 Testing basic functionality...
+✅ Flag conversion test passed
+✅ Data loading test passed
+✅ Raw data loading test passed
+
+==================================================
+🎯 Validation Summary: 3/3 checks passed
+==================================================
+✅ All validation checks passed!
+
+📋 Next steps:
+1. Install pytest: pip install -r test/requirements.txt
+2. Run full test suite: python -m pytest test/ -v
+3. Generate coverage: python -m pytest test/ --cov=data --cov=utils
+```
+## 🧪 Advanced Testing
+
+### Optional: Install pytest
+
+For advanced testing capabilities, you can install pytest:
 
 ```bash
 pip install -r test/requirements.txt
 ```
 
-### Quick Start
+This provides additional testing tools:
+- `pytest` - Full-featured testing framework
+- `pytest-cov` - Code coverage reporting
+- `pytest-xdist` - Parallel test execution
+- `pytest-html` - HTML test reports
 
-#### 1. Run All Tests
+### Running pytest Tests
+
+If you create pytest test files, you can run them with:
+
 ```bash
-# From project root
+# Run all tests with verbose output
 python -m pytest test/ -v
-```
 
-#### 2. Run with Coverage
-```bash
+# Run with coverage reporting
 python -m pytest test/ --cov=data --cov=utils --cov-report=term-missing
-```
 
-#### 3. Use Test Runner Script
-```bash
-# From test directory
-cd test/
-python run_tests.py
-```
-
-#### 4. Run Specific Test Files
-```bash
-# Test only data loader
-python -m pytest test/test_loader.py -v
-
-# Test only data filters
-python -m pytest test/test_filters.py -v
-
-# Test only helper functions
-python -m pytest test/test_helpers.py -v
-```
-
-#### 5. Quick Validation (Without pytest)
-```bash
-# Simple validation script
-cd test/
-python validate_setup.py
-```
-
-### Advanced Test Options
-
-#### Parallel Testing
-```bash
-pip install pytest-xdist
-python -m pytest test/ -n auto  # Use all CPU cores
-```
-
-#### Generate HTML Report
-```bash
+# Generate HTML coverage report
 python -m pytest test/ --cov=data --cov=utils --cov-report=html
 # Open htmlcov/index.html in browser
+
+# Parallel execution for faster tests
+python -m pytest test/ -n auto
 ```
 
-#### Test with Different Verbosity
-```bash
-python -m pytest test/ -v      # Verbose
-python -m pytest test/ -vv     # Extra verbose
-python -m pytest test/ -q      # Quiet
-```
+### Creating Custom Tests
 
-## 📊 Test Coverage
+You can extend the testing by creating pytest test files:
 
-### Current Coverage Targets
-
-- **Data Loading (`data/loader.py`)**: ✅ **Fully tested** - 15 tests covering all functionality
-- **Data Filtering (`data/filters.py`)**: ✅ **Fully tested** - 15 tests covering preprocessing and filtering
-- **Helper Functions (`utils/helpers.py`)**: ✅ **Fully tested** - 11 tests covering current implementations
-- **Utility Functions (`utils/flags.py`, `utils/mapping.py`)**: ✅ **Covered** via integration tests
-
-### Current Test Status
-
-**✅ 41 tests passing, 0 failures**
-
-All current functionality is comprehensively tested including:
-- CSV and GeoJSON data loading
-- Data merging and column renaming  
-- Energy type mapping and country code conversion
-- Flag generation and data validation
-- Error handling for missing files
-- Integration testing with real project data
-
-### Coverage Reports
-
-#### Terminal Coverage
-```bash
-python -m pytest test/ --cov=data --cov=utils --cov-report=term-missing
-```
-
-#### HTML Coverage Report
-```bash
-python -m pytest test/ --cov=data --cov=utils --cov-report=html
-open htmlcov/index.html  # macOS
-# Or navigate to htmlcov/index.html in your browser
-```
-
-#### Coverage Configuration
-
-Coverage settings can be configured in `pyproject.toml` or `.coveragerc`:
-
-```toml
-[tool.coverage.run]
-source = ["data", "utils"]
-omit = [
-    "*/test/*",
-    "*/__pycache__/*",
-    "*/venv/*"
-]
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise AssertionError",
-    "raise NotImplementedError"
-]
-```
-
-## ✍️ Writing Tests
-
-### Test Structure Guidelines
-
-#### 1. Use Descriptive Test Names
+**Example: `test/test_custom.py`**
 ```python
-def test_load_data_success():
-    """Test successful data loading and processing."""
-    # Test implementation
-```
+import pytest
+from data.loader import load_data
+from utils.flags import iso2_to_flag
 
-#### 2. Organize Tests in Classes
-```python
-class TestDataLoader:
-    """Test suite for data loading functionality."""
-    
-    def test_basic_loading(self):
-        """Test basic data loading."""
-        pass
-    
-    def test_error_handling(self):
-        """Test error handling in data loading."""
-        pass
-```
+def test_greece_country_code():
+    """Test that Greece is processed correctly with EL code."""
+    df = load_data()
+    greece_data = df[df['Code'] == 'EL']
+    assert len(greece_data) > 0, "Greece data should exist with EL code"
+    assert 'Flag' in greece_data.columns
 
-#### 3. Use Fixtures for Common Data
-```python
-@pytest.fixture
-def sample_data():
-    """Provide sample data for testing."""
-    return pd.DataFrame({
-        'geo': ['DE', 'FR'],
-        'value': [25.5, 30.2]
-    })
-
-def test_with_fixture(sample_data):
-    """Test using fixture data."""
-    assert not sample_data.empty
-```
-
-### Test Categories
-
-#### 1. Unit Tests
-Test individual functions in isolation:
-```python
-def test_load_csv_data_success():
-    """Test CSV loading function."""
-    df = load_csv_data('./data/nrg_ind_ren_linear.csv')
-    assert isinstance(df, pd.DataFrame)
-    assert not df.empty
-
-def test_iso2_to_flag():
-    """Test flag conversion function."""
-    assert iso2_to_flag("DE") == "🇩🇪"
-    assert iso2_to_flag("FR") == "🇫🇷"
-```
-
-#### 2. Integration Tests
-Test data pipeline end-to-end:
-```python
-def test_full_data_pipeline():
-    """Test complete data processing pipeline."""
-    result = load_data()
-    assert isinstance(result, pd.DataFrame)
-    assert not result.empty
-    assert 'Flag' in result.columns
-```
-
-#### 3. Parametrized Tests
-Test multiple scenarios efficiently:
-```python
 @pytest.mark.parametrize("country,flag", [
     ("DE", "🇩🇪"), ("FR", "🇫🇷"), ("ES", "🇪🇸"),
+    ("GR", "🇬🇷"),  # Greece flag from GR code
 ])
-def test_country_flags(country, flag):
-    """Test flag conversion for multiple countries."""
+def test_flag_conversions(country, flag):
+    """Test multiple country flag conversions."""
     assert iso2_to_flag(country) == flag
-```
 
-#### 4. Error Testing
-Test error conditions and edge cases:
-```python
-def test_file_not_found():
-    """Test error handling for missing files."""
-    with pytest.raises(FileNotFoundError):
-        load_data(data_path='./nonexistent.csv')
-```
-
-#### 5. Fixture-based Testing
-Use both real and sample data:
-```python
-def test_with_real_data(raw_data):
-    """Test with actual project data."""
-    df, gdf = raw_data
-    result = preprocess(df, gdf)
-    assert not result.empty
-
-def test_with_sample_data(sample_csv_data):
-    """Test with controlled sample data."""
-    renamed = rename_columns(sample_csv_data)
-    assert 'Energy Type' in renamed.columns
-```
-
-### Best Practices
-
-1. **Test Current Functionality**: Focus on what's actually implemented
-2. **Use Descriptive Assertions**: Include meaningful error messages
-3. **Clean Test Data**: Use fixtures for both real and sample data
-4. **Test Edge Cases**: Include tests for empty data, missing files, invalid inputs
-5. **Class-based Organization**: Group related tests in test classes
-6. **Skip Gracefully**: Use `pytest.skip()` when data files are missing
-7. **Integration Testing**: Test complete workflows with real data
-
-## 🔄 Continuous Integration
-
-### GitHub Actions Example
-
-The test suite is ready for CI/CD integration. Create `.github/workflows/tests.yml`:
-
-```yaml
-name: Tests
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.9", "3.10", "3.11"]
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install -r test/requirements.txt
-    
-    - name: Run tests with coverage
-      run: |
-        python -m pytest test/ --cov=data --cov=utils --cov-report=xml
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-```
-
-### Pre-commit Hooks
-
-Install pre-commit hooks to run tests before commits:
-
-```bash
-pip install pre-commit
-```
-
-Create `.pre-commit-config.yaml`:
-
-```yaml
-repos:
-  - repo: local
-    hooks:
-      - id: pytest
-        name: pytest
-        entry: python -m pytest test/ -x
-        language: system
-        pass_filenames: false
-        always_run: true
+def test_data_completeness():
+    """Test that loaded data has all required columns."""
+    df = load_data()
+    required_columns = ['Code', 'Flag', 'Country', 'Energy Type', 
+                       'Renewable Percentage', 'Year', 'CNTR_ID', 'geometry']
+    for col in required_columns:
+        assert col in df.columns, f"Missing column: {col}"
 ```
 
 ## 🐛 Troubleshooting
@@ -359,20 +185,39 @@ repos:
 #### 1. Import Errors
 ```bash
 # Error: ModuleNotFoundError: No module named 'data'
-# Solution: Run tests from project root directory
-cd /path/to/EU-Energy-Map
-python -m pytest test/
+# Solution: Run validation from project root directory
+cd /home/kuranez/Projects/Python/Geo/EU-Energy-Map
+python test/validate_setup.py
 ```
 
-#### 2. Missing Test Data
+The validation script automatically handles path issues by detecting and changing to the project root if needed.
+
+#### 2. Missing Data Files
 ```bash
 # Error: FileNotFoundError: Missing input data files
-# Solution: Ensure data files exist
+# Solution: Ensure data files exist in the correct locations
 ls ./data/nrg_ind_ren_linear.csv
 ls ./geo/europe.geojson
 ```
 
-#### 3. Permission Errors
+Required files:
+- `data/nrg_ind_ren_linear.csv` - Renewable energy dataset
+- `geo/europe.geojson` - European geographic boundaries
+
+#### 3. Missing Dependencies
+```bash
+# Error: ModuleNotFoundError: No module named 'pandas'
+# Solution: Install project dependencies
+pip install -r requirements.txt
+```
+
+Required packages:
+- `pandas` - Data manipulation
+- `geopandas` - Geographic data handling
+- `plotly` - Interactive visualizations
+- `dash` - Web application framework
+
+#### 4. Permission Errors
 ```bash
 # Error: PermissionError: cannot access file
 # Solution: Check file permissions
@@ -380,85 +225,178 @@ chmod 644 ./data/*.csv
 chmod 644 ./geo/*.geojson
 ```
 
-#### 4. Memory Issues with Large Data
+#### 5. Validation Fails on Specific Check
+
+If a specific validation check fails:
+
+**Import Check Failed** 🔍
+- Verify all dependencies are installed: `pip install -r requirements.txt`
+- Check Python version compatibility (3.8+)
+- Ensure you're in the project directory
+
+**Data File Check Failed** 📁
+- Confirm data files are in correct locations
+- Check file names match exactly (case-sensitive)
+- Verify files aren't corrupted: try opening them manually
+
+**Functionality Test Failed** 🧪
+- Review error messages for specific failures
+- Check data format hasn't changed
+- Ensure helper functions are properly refactored
+
+### Getting Help
+
+If validation continues to fail:
+
+1. **Check Error Messages**: Read the full error output carefully
+2. **Verify Installation**: Ensure all dependencies are installed
+3. **Check File Paths**: Confirm you're running from the correct directory
+4. **Review Recent Changes**: If it worked before, check what changed
+5. **Run Individual Checks**: Test components separately to isolate issues
+
+### Manual Testing
+
+You can manually test components:
+
 ```python
-# For large datasets, use data sampling in tests
-@pytest.fixture
-def sample_data():
-    """Use subset of data for testing."""
-    df = pd.read_csv('./data/nrg_ind_ren_linear.csv')
-    return df.sample(n=1000)  # Use only 1000 rows
+# Test imports
+python -c "from data.loader import load_data; print('Import OK')"
+
+# Test flag conversion
+python -c "from utils.flags import iso2_to_flag; print(iso2_to_flag('DE'))"
+
+# Test data loading
+python -c "from data.loader import load_data; df = load_data(); print(f'Loaded {len(df)} rows')"
 ```
 
-### Performance Tips
+## 📚 Validation Script Details
 
-1. **Use Module-scoped Fixtures**: Load data once per test module
-2. **Parallel Testing**: Use `pytest-xdist` for faster execution
-3. **Skip Slow Tests**: Mark slow tests and skip in development
+### What the Script Does
 
+The `validate_setup.py` script is a **self-contained validation tool** that:
+
+1. **Auto-detects Project Root**: Finds the correct directory automatically
+2. **Checks Imports**: Validates all modules can be loaded
+3. **Verifies Data Files**: Confirms required CSV and GeoJSON files exist
+4. **Tests Core Functions**: Runs basic functionality checks
+5. **Provides Clear Feedback**: Shows ✅/❌ status for each check
+
+### Validation Checks Breakdown
+
+#### Check 1: Import Validation
 ```python
-@pytest.mark.slow
-def test_full_dataset():
-    """Slow test - skip in development."""
-    pass
-
-# Run without slow tests
-# python -m pytest test/ -m "not slow"
+from data.loader import load_data
+from data.filters import preprocess, filter_data
+from utils.flags import iso2_to_flag
 ```
 
-## 📈 Test Metrics
+Ensures all core modules are accessible and error-free.
 
-### Key Metrics to Track
+#### Check 2: File Validation
+```python
+required_files = [
+    './data/nrg_ind_ren_linear.csv',
+    './geo/europe.geojson'
+]
+```
 
-- **Code Coverage**: Percentage of code executed by tests
-- **Test Execution Time**: How long tests take to run
-- **Test Success Rate**: Percentage of tests passing
-- **Error Detection**: Number of bugs caught by tests
+Confirms data files are present and accessible.
 
-### Coverage Goals
+#### Check 3: Functionality Tests
+```python
+# Flag conversion test
+iso2_to_flag("DE") == "🇩🇪"
 
-| Component | Current Status | Test Count |
-|-----------|----------------|------------|
-| Data Loading (`data/loader.py`) | ✅ **Fully Covered** | 9 tests |
-| Data Filtering (`data/filters.py`) | ✅ **Fully Covered** | 9 tests |
-| Helper Functions (`utils/helpers.py`) | ✅ **Fully Covered** | 9 tests |
-| Utility Functions (`utils/flags.py`) | ✅ **Covered** | 10 tests |
-| Integration Testing | ✅ **Complete** | 4 tests |
+# Data loading test
+df = load_data()
+assert isinstance(df, pd.DataFrame)
+assert 'Flag' in df.columns
 
-**Total: 41 tests passing**
+# Raw data test
+data, gdf = load_data(return_raw=True)
+```
+
+Validates that the application's core features work correctly.
+
+### Exit Codes
+
+The validation script uses standard exit codes:
+- **0**: All checks passed ✅
+- **1**: One or more checks failed ❌
+
+This makes it suitable for CI/CD integration:
+```bash
+python test/validate_setup.py && echo "Validation passed" || echo "Validation failed"
+```
 
 ## 🔗 Additional Resources
 
-- [pytest Documentation](https://docs.pytest.org/)
-- [pytest-cov Documentation](https://pytest-cov.readthedocs.io/)
-- [Python Testing Best Practices](https://docs.python-guide.org/writing/tests/)
-- [Effective Python Testing](https://realpython.com/pytest-python-testing/)
+### Documentation
+- [Pandas Documentation](https://pandas.pydata.org/docs/)
+- [GeoPandas Documentation](https://geopandas.org/)
+- [Plotly Dash Documentation](https://dash.plotly.com/)
+- [pytest Documentation](https://docs.pytest.org/) (for advanced testing)
+
+### Project Documentation
+- `README.md` - Project overview and setup instructions
+- `REFACTORING_GUIDE.md` - Architecture and development guide
+- `CHANGELOG.md` - Change history and version information
+- `test/README.md` - Testing pipeline documentation
+
+## 🎯 Summary
+
+### Current Testing Approach
+
+The EU Energy Map uses a **simplified validation approach**:
+
+✅ **Single validation script** (`validate_setup.py`)  
+✅ **No external test framework required**  
+✅ **Fast and lightweight** (runs in seconds)  
+✅ **Self-contained** (includes all necessary checks)  
+✅ **Clear feedback** (visual status indicators)
+
+### When to Run Validation
+
+Run the validation script:
+- ✨ After initial project setup
+- 🔄 After pulling new changes from repository
+- 📦 After installing/updating dependencies
+- 🛠️ After modifying core data processing code
+- 🐛 When debugging issues
+- 🚀 Before deploying or committing changes
+
+### Benefits of This Approach
+
+1. **Simplicity**: One script, zero configuration
+2. **Speed**: Runs in seconds without heavy framework overhead
+3. **Accessibility**: Easy for new contributors to understand
+4. **Reliability**: Tests with actual project data
+5. **Maintainability**: Single file to update as project evolves
 
 ---
 
-## 🤝 Contributing to Tests
+## 🤝 Contributing
 
-When contributing to the project:
+When contributing to the project, please:
 
-1. **Test Current Functionality**: Focus on what's actually implemented
-2. **Maintain Coverage**: Don't decrease overall test coverage (currently 41 tests passing)
-3. **Test Edge Cases**: Include tests for error conditions and missing data
-4. **Document Tests**: Use clear docstrings and comments
-5. **Run Full Test Suite**: Ensure all tests pass before submitting
-6. **Add Helper Tests**: When adding new helper functions, include comprehensive tests
-7. **Use Existing Patterns**: Follow the established test structure and naming conventions
+1. ✅ **Run validation before committing**: `python test/validate_setup.py`
+2. 📝 **Update validation script** if adding new core modules
+3. 🧪 **Add checks** for new critical functionality
+4. 📖 **Document changes** in validation behavior
+5. 🔍 **Test edge cases** manually for complex changes
 
-### Future Testing Areas
+### Future Testing Enhancements
 
-When implementing the remaining pandas refactoring (see `REFACTORING_GUIDE.md`):
+If the project grows, consider adding:
+- Full pytest test suite with unit tests
+- Integration tests for UI components
+- Performance benchmarking tests
+- Data quality validation tests
+- Automated CI/CD pipeline testing
 
-- Tests for `clean_columns()` helper function
-- Tests for `convert_data_types()` helper function  
-- Tests for `remap_country_codes()` helper function
-- Tests for `add_country_flags()` helper function
-- Tests for `process_energy_data()` pipeline function
+For now, the lightweight validation approach provides the right balance of simplicity and coverage for the project's needs.
 
-For questions about testing, please refer to:
-- `test/README.md` for testing pipeline summary
-- `test/TEST_SUCCESS.md` for current status
-- `REFACTORING_GUIDE.md` for future development plans
+---
+
+**Last Updated**: November 2025  
+**Validation Script Version**: 1.0

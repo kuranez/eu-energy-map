@@ -16,7 +16,7 @@ def create_widgets(df_renewable):
         tuple: (year_slider, country_select) Panel widgets.
     """
     year_slider = pn.widgets.IntSlider(
-        name='Year', start=2004, end=2022, step=1, value=2022
+        name='Year', start=2004, end=2024, step=1, value=2024
     )
 
     country_select = pn.widgets.Select(

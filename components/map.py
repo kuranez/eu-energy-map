@@ -6,10 +6,15 @@
 import plotly.graph_objects as go
 # JSON for loading geojson data
 import json
+# Path handling for loading bundled data files
+from pathlib import Path
 # Mapbox token for accessing Mapbox styles
 from config import MAPBOX_TOKEN
 # Custom utility functions for color scale normalization
 from utils.colors import get_colorscale
+
+
+GEOJSON_PATH = Path(__file__).resolve().parents[1] / 'geo' / 'europe.geojson'
 
 # Create choropleth map using Plotly
 
@@ -26,7 +31,7 @@ def create_choropleth_map(df_year):
 
     fig = go.Figure(go.Choroplethmapbox(
         # Load the GeoJSON file for Europe
-        geojson=json.load(open('./geo/europe.geojson')),
+        geojson=json.load(open(GEOJSON_PATH)),
         # Use the 'Code' column for locations
         locations=df_year['Code'],
         # Use the 'Renewable Percentage' column for color intensity

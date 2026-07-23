@@ -1,6 +1,9 @@
 # app.py
 
 # Import necessary libraries
+from pathlib import Path
+from typing import cast
+
 import panel as pn
 import pandas as pd
 import geopandas as gpd
@@ -21,8 +24,13 @@ from layout.dashboard import build_layout
 # Initialize Panel extension with required components
 pn.extension('tabulator', 'plotly', design='material', sizing_mode='stretch_width')
 
-# Load and preprocess data
-data, europe = load_data(data_path='./data/nrg_ind_ren_linear.csv', geo_path='./geo/europe.geojson', return_raw=True)
+# Load and preprocess data from paths relative to this file
+base_dir = Path(__file__).resolve().parent
+data_path = base_dir / 'data' / 'nrg_ind_ren_linear.csv'
+geo_path = base_dir / 'geo' / 'europe.geojson'
+raw_data, raw_europe = load_data(data_path=str(data_path), geo_path=str(geo_path), return_raw=True)
+data = cast(pd.DataFrame, raw_data)
+europe = cast(gpd.GeoDataFrame, raw_europe)
 # If preprocess expects a DataFrame, convert GeoDataFrame to DataFrame
 merged = preprocess(data, europe)
 if not isinstance(data, pd.DataFrame) or not isinstance(europe, gpd.GeoDataFrame):

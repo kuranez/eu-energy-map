@@ -18,4 +18,4 @@ def test_filter_data_eu_only(raw_data):
     assert not df_renewable.empty
     assert not df_eu_total.empty
     assert df_renewable['Code'].nunique() <= 27
-    assert df_eu_total['Year'].between(2004, 2022).all()
+    assert df_eu_total['Year'].between(2004, 2024).all()

@@ -26,12 +26,9 @@ pn.extension('tabulator', 'plotly', design='material', sizing_mode='stretch_widt
 
 # Load and preprocess data from paths relative to this file
 base_dir = Path(__file__).resolve().parent
-data_paths = [
-    base_dir / 'data' / 'nrg_ind_ren_linear.csv',
-    base_dir / 'data' / 'nrg_ind_ren_linear_old.csv',
-]
+data_path = base_dir / 'data' / 'nrg_ind_ren_linear.csv'
 geo_path = base_dir / 'geo' / 'europe.geojson'
-raw_data, raw_europe = load_data(data_path=[str(path) for path in data_paths], geo_path=str(geo_path), return_raw=True)
+raw_data, raw_europe = load_data(data_path=str(data_path), geo_path=str(geo_path), return_raw=True)
 data = cast(pd.DataFrame, raw_data)
 europe = cast(gpd.GeoDataFrame, raw_europe)
 # If preprocess expects a DataFrame, convert GeoDataFrame to DataFrame

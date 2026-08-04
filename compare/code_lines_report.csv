@@ -1,0 +1,12 @@
+File,Code Lines
+app.py,49
+components/charts/bar_chart_by_country.py,89
+components/charts/bar_chart_by_year.py,93
+components/map.py,59
+components/widgets.py,19
+config.py,16
+data/filters.py,44
+data/loader.py,67
+layout/dashboard.py,100
+utils/colors.py,46
+utils/flags.py,20

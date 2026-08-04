@@ -1,0 +1,76 @@
+EU_Energy_Map_v1.0_Copy_Workflow:
+  
+  metadata:
+    version: "v.1.0-copy"
+    title: "European Union Energy Map (Copy)"
+    description: "Copy of v.1.0 EU Energy Map dashboard located in Compare workspace for analysis purposes"
+    file_path: "/home/kuranez/Projects/Compare/notebooks/v.1.0_eu-energy-map-nb.ipynb"
+    total_cells: 113
+    markdown_cells: 57
+    code_cells: 56
+    complexity: "Production-ready"
+    date_created: "Copy for comparison analysis"
+  data_libraries: ["Pandas", "GeoPandas"]
+  dashboard_type: "Interactive Web Application"
+  target_platform: "Jupyter Notebook / Web Server"
+  note: "This appears to be an identical or near-identical copy of the v.1.0 notebook from the history folder"
+
+workflow_structure:
+  note: "This notebook has the same structure and functionality as the v.1.0_eu-energy-map-nb.ipynb from the history folder"
+  
+  sections:
+    1_title_and_introduction:
+      title: "European Union Energy Map"
+      cells: [1-2]
+      
+    2_data_info:
+      title: "Data Info"
+      cells: [3-5]
+      description: "Renewable energy dataset and geographical data documentation"
+      
+    3_notebook_structure:
+      title: "Notebook Structure"
+      cells: [6-7]
+      description: "Workflow diagram showing v.1.0 structure"
+      
+    4_imports:
+      title: "I. Import"
+      cells: [8-11]
+      description: "Import statements for standard library, Panel, data analysis, and visualization"
+      
+    5_settings:
+      title: "II. Settings"
+      cells: [12-15]
+      description: "Panel extension, Plotly renderer, and MapBox token configuration"
+      
+    6_methods:
+      title: "III. Methods"
+      cells: [16-88]
+      description: "Core functionality including country flags, data loading, filtering, and visualization"
+      
+    7_main_execution:
+      title: "Main execution and data preprocessing"
+      cells: [89]
+      
+    8_dashboard_components:
+      title: "Dashboard creation and layout"
+      cells: [90-113]
+      description: "Widget creation, chart generation, and dashboard assembly"
+
+technical_implementation:
+  note: "Same technical implementation as v.1.0_eu-energy-map-nb.ipynb"
+  data_processing: "Combined data loading method with EU country filtering"
+  visualization_components: "Choropleth map, bar charts, interactive widgets"
+  dashboard_features: "Three-tab interface with year/country filtering and data exploration"
+
+comparison_notes:
+  relationship: "Copy or duplicate of v.1.0_eu-energy-map-nb.ipynb"
+  location_difference: "Located in Compare/notebooks/ instead of EU-Energy-Map/history/"
+  purpose: "Likely copied for comparison or analysis purposes"
+  functional_equivalence: "Same features and capabilities as the original v.1.0 notebook"
+  
+key_characteristics:
+  - duplicate_notebook: "Copy of existing v.1.0 version for comparison purposes"
+  - same_functionality: "Identical dashboard features and technical implementation"
+  - comparison_context: "Part of notebook comparison workflow in Compare workspace"
+  - workflow_reference: "Refer to v.1.0_eu-energy-map-nb_workflow.yaml for detailed technical specifications"

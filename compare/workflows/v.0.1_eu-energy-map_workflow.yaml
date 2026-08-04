@@ -1,0 +1,233 @@
+EU_Energy_Map_v0.1_Workflow:
+  
+  metadata:
+    version: "v.0.1"
+    title: "European Union Energy Map"
+    description: "Basic data visualization notebook with simple dashboard"
+    file_path: "/home/kuranez/Projects/Compare/notebooks/v.0.1_eu-energy-map.ipynb"
+    total_cells: 27
+    markdown_cells: 17
+    code_cells: 10
+    complexity: "Basic"
+    date_created: "Initial version"
+    
+  workflow_structure:
+    
+    1_introduction:
+      description: "Project introduction and overview"
+      cells: [1, 2]
+      content:
+        - title: "European Union Energy Map"
+        - project_description: "Dashboard with interactive map visualizing Eurostat data"
+        - github_link: "Project repository link"
+      
+    2_table_of_contents:
+      description: "Navigation structure"
+      cells: [3, 4]
+      content:
+        - toc_header: "Table of Contents"
+        - workflow_outline:
+            - "Data Preparation"
+            - "Map Creation" 
+            - "Panel Dashboard"
+      
+    3_data_preparation:
+      description: "Data loading and preprocessing"
+      cells: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+      subsections:
+        3a_dataset_info:
+          description: "Dataset description"
+          cells: [5, 6]
+          content:
+            - section_header: "Data Preparation"
+            - dataset_list: "nrg_ind_ren_linear.csv description"
+            
+        3b_data_loading:
+          description: "Load and check data"
+          cells: [7, 8, 9]
+          content:
+            - load_header: "Load Data & datacheck"
+            - working_directory: "Print current directory"
+            - csv_loading: "Load CSV and display head"
+            
+        3c_data_formatting:
+          description: "Create and format DataFrame"
+          cells: [10, 11, 12, 13, 14, 15, 16, 17, 18]
+          content:
+            - format_header: "Create & Format DataFrame"
+            - create_dataframe: "Manual DataFrame creation"
+            - column_editing: "Rename columns for readability"
+            - datetime_conversion: "Convert Last_Update to datetime"
+            - drop_columns: "Remove unnecessary columns"
+    
+    4_map_creation:
+      description: "Geographic visualization development"
+      cells: [19, 20, 21, 22, 23, 24, 25]
+      subsections:
+        4a_geojson_loading:
+          description: "Load geographical data"
+          cells: [19, 20, 21]
+          content:
+            - map_header: "Map Creation"
+            - geojson_header: "Load GEOJSON-File"
+            - geojson_loading: "Load GeoJSON and merge with energy data"
+            
+        4b_mapbox_visualization:
+          description: "Create Mapbox choropleth map"
+          cells: [22, 23]
+          content:
+            - mapbox_header: "MapBox"
+            - mapbox_implementation: "Full Mapbox choropleth and bar chart creation"
+            
+        4c_alternative_mapping:
+          description: "OpenStreetMap alternative"
+          cells: [24, 25]
+          content:
+            - osm_header: "Open-Street-Maps"
+            - osm_commented_code: "Alternative OSM implementation (commented out)"
+    
+    5_panel_dashboard:
+      description: "Interactive dashboard creation"
+      cells: [26, 27]
+      content:
+        - dashboard_header: "Panel Dashboard"
+        - interactive_dashboard: "Panel widgets and interactivity setup"
+
+  technical_implementation:
+    
+    libraries_used:
+      core:
+        - "os": "System operations"
+        - "pandas": "Data manipulation"
+        - "geopandas": "Geospatial data handling"
+        - "json": "JSON file processing"
+      visualization:
+        - "plotly.express": "Statistical plotting"
+        - "plotly.graph_objects": "Advanced plotting"
+        - "plotly.io": "Plotly configuration"
+      dashboard:
+        - "panel": "Interactive dashboard framework"
+    
+    data_sources:
+      primary_data: "nrg_ind_ren_linear.csv - Eurostat renewable energy data"
+      geographic_data: "europe.geojson - European country boundaries"
+      
+    visualization_types:
+      - "Choropleth map with Mapbox"
+      - "Bar chart with country comparison"
+      - "Interactive year slider"
+      
+    key_features:
+      - "Basic data loading and cleaning"
+      - "Simple geographic visualization"
+      - "Mapbox integration with access token"
+      - "Panel dashboard with year slider"
+      - "Alternative OSM mapping approach"
+
+  code_organization:
+    
+    structure_type: "Linear sequential"
+    organization_level: "Basic"
+    
+    code_patterns:
+      - "Direct execution style"
+      - "Inline data processing"
+      - "Manual DataFrame creation for testing"
+      - "Commented alternative approaches"
+      
+    documentation_level: "Minimal"
+    error_handling: "None"
+    code_reusability: "Low"
+    
+  data_processing_workflow:
+    
+    step_1_data_loading:
+      description: "Load CSV data from file system"
+      operations:
+        - "Read nrg_ind_ren_linear.csv"
+        - "Display data head for inspection"
+        
+    step_2_data_creation:
+      description: "Manual DataFrame creation for testing"
+      operations:
+        - "Create sample DataFrame with hardcoded values"
+        - "Structure data for Albania 2004-2008"
+        
+    step_3_data_cleaning:
+      description: "Basic data formatting"
+      operations:
+        - "Rename columns for better readability"
+        - "Convert datetime format for Last_Update"
+        - "Drop unnecessary columns (Dataflow, Observation_Flag)"
+        
+    step_4_geographic_integration:
+      description: "Merge with geographic data"
+      operations:
+        - "Load europe.geojson file"
+        - "Merge energy data with country boundaries"
+        
+    step_5_visualization:
+      description: "Create choropleth map and charts"
+      operations:
+        - "Set up Mapbox access token"
+        - "Create choropleth map for 2020 data"
+        - "Generate bar chart for country comparison"
+        - "Implement color scaling with Viridis"
+
+  dashboard_components:
+    
+    widgets:
+      year_slider:
+        type: "IntSlider"
+        range: "2000-2020"
+        default_value: 2020
+        purpose: "Year selection for data filtering"
+        
+    visualizations:
+      choropleth_map:
+        library: "plotly.graph_objects"
+        type: "Choroplethmapbox"
+        style: "carto-positron"
+        center: "Europe (lat: 54, lon: 15)"
+        zoom: 3
+        
+      bar_chart:
+        library: "plotly.express"
+        type: "bar"
+        color_scale: "Viridis"
+        data_year: 2020
+        
+    interactivity:
+      level: "Basic"
+      features:
+        - "Year slider for map updates"
+        - "Hover information on map"
+        - "Color-coded data visualization"
+
+  development_characteristics:
+    
+    strengths:
+      - "Clear step-by-step structure"
+      - "Multiple visualization approaches"
+      - "Integration of geographic and statistical data"
+      - "Basic interactivity implementation"
+      
+    limitations:
+      - "Hardcoded sample data"
+      - "Limited error handling"
+      - "No function modularity"
+      - "Basic documentation"
+      - "Single year focus (2020)"
+      
+    learning_indicators:
+      - "Experimental code with alternatives"
+      - "Commented out sections for different approaches"
+      - "Manual data creation for testing"
+      - "Basic dashboard implementation"
+
+  evolution_notes:
+    - "Foundation version establishing core concepts"
+    - "Basic implementation of mapping and dashboard"
+    - "Experimental approach with multiple techniques"
+    - "Limited to simple data processing and visualization"
+    - "Sets up framework for future enhancements"

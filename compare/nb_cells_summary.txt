@@ -1,0 +1,8 @@
+Found 0 notebook files in './notebooks' and subdirectories:
+
+==================================================
+SUMMARY STATISTICS:
+Total notebooks analyzed: 0
+Total cells across all notebooks: 0
+Total code cells: 0
+Total markdown cells: 0

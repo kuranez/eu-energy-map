@@ -75,19 +75,23 @@ def create_bar_chart_country(df_eu_total, df_country, country):
         showlegend=False
     ))
 
+    years = sorted(set(df_eu_total['Year']).union(set(df_country['Year'])))
+    min_year = min(years) if years else 2004
+    max_year = max(years) if years else 2024
+
     # Update the layout of the figure
     # This will set the title, axis labels, color scale, and other layout properties 
 
     fig.update_layout(
         # Set the title of the chart
-        title=f"<b>Share of Renewable Energy ({country}, 2004–2022)</b>",
+        title=f"<b>Share of Renewable Energy ({country}, 2004–2024)</b>",
         
         # Set x-axis properties
         xaxis=dict(
             title="Year", 
             tickmode="linear", 
             dtick=5, 
-            range=[2003.5, 2022.5]),
+            range=[min_year - 0.5, max_year + 0.5]),
         # Set y-axis properties
         yaxis_title="Renewable Energy (%)",
         

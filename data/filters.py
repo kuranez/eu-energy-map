@@ -10,8 +10,15 @@ def preprocess(data: pd.DataFrame, europe: pd.DataFrame) -> pd.DataFrame:
     Function to preprocess the energy data.
     Merges the energy data with Europe GeoDataFrame, renames columns, and formats the data.
     '''
-    # Merge the energy data with Europe GeoDataFrame
-    merged = europe.merge(data, left_on='NAME_ENGL', right_on='geo')
+    data = data.copy()
+    country_mapping = {}
+    for _, row in europe.iterrows():
+        for value in [row.get('NAME_ENGL'), row.get('CNTR_ID'), row.get('ISO3_CODE'), row.get('ISO2_Code')]:
+            if pd.notna(value):
+                country_mapping[str(value).strip()] = row['CNTR_ID']
+
+    data['geo_key'] = data['geo'].astype(str).map(country_mapping).fillna(data['geo']).astype(str)
+    merged = europe.merge(data, left_on='CNTR_ID', right_on='geo_key')
     # Rename columns to standardized format
     merged.rename(columns={
         'nrg_bal': 'Energy Type', 'TIME_PERIOD': 'Year',
@@ -28,7 +35,7 @@ def preprocess(data: pd.DataFrame, europe: pd.DataFrame) -> pd.DataFrame:
     # Apply the energy type mapping
     merged['Energy Type'] = merged['Energy Type'].replace(energy_type_map)
     # Drop unnecessary columns
-    columns_to_drop = ['DATAFLOW', 'LAST UPDATE', 'freq', 'unit', 'OBS_FLAG', 'CONF_STATUS', 'geo']
+    columns_to_drop = ['DATAFLOW', 'LAST UPDATE', 'freq', 'unit', 'OBS_FLAG', 'CONF_STATUS', 'geo', 'geo_key']
     merged.drop(columns=columns_to_drop, inplace=True, errors='ignore')
     # Convert Year and Renewable Percentage to numeric and round
     merged[['Year', 'Renewable Percentage']] = merged[['Year', 'Renewable Percentage']].apply(pd.to_numeric)

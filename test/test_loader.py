@@ -4,6 +4,7 @@ import os
 import pytest
 import pandas as pd
 from data.loader import load_data, iso2_to_flag
+from data.filters import filter_data
 from components.charts.bar_chart_by_country import create_bar_chart_country
 
 @pytest.mark.usefixtures("raw_data")
@@ -32,6 +33,21 @@ def test_load_data_includes_older_years_from_legacy_file(tmp_path):
 
     assert data['TIME_PERIOD'].min() == 2004
     assert data['nrg_bal'].eq('Renewable energy - overall').all()
+
+
+def test_filter_data_deduplicates_country_year_rows():
+    merged = pd.DataFrame({
+        'Country': ['Germany', 'Germany'],
+        'Code': ['DE', 'DE'],
+        'Year': [2020, 2020],
+        'Renewable Percentage': [20.0, 20.0],
+        'Energy Type': ['Renewable Energy Total', 'Renewable Energy Total'],
+    })
+
+    df_renewable, df_eu_total = filter_data(merged)
+
+    assert len(df_renewable) == 1
+    assert df_eu_total['Renewable Percentage'].tolist() == [20.0]
 
 
 def test_country_chart_range_follows_available_years():

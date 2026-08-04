@@ -43,6 +43,8 @@ def preprocess(data: pd.DataFrame, europe: pd.DataFrame) -> pd.DataFrame:
     merged['Renewable Percentage'] = merged['Renewable Percentage'].round(1)
     # Add 'Code' column from 'CNTR_ID' for plotting
     merged['Code'] = merged['CNTR_ID']
+    # Deduplicate rows that represent the same country/year/energy combination
+    merged = merged.drop_duplicates(subset=['Code', 'Year', 'Energy Type'], keep='last')
     # Add ISO2_Code for flag purposes (EL→GR), but keep Code as EL for plotting
     merged['ISO2_Code'] = merged['Code'].replace('EL', 'GR')
     # Add country flags based on ISO2_Code
@@ -54,5 +56,6 @@ def filter_data(merged: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     eu_countries = {"AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT",
                     "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"}
     df_renewable = merged[(merged['Energy Type'] == 'Renewable Energy Total') & merged['Code'].isin(eu_countries)]
+    df_renewable = df_renewable.drop_duplicates(subset=['Code', 'Year'], keep='last')
     df_eu_total = df_renewable.groupby('Year', as_index=False)['Renewable Percentage'].mean().reset_index()
     return df_renewable, df_eu_total

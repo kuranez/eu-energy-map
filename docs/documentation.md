@@ -439,9 +439,13 @@ The `layout/dashboard.py` module assembles all UI building blocks into one Panel
    * `"Country Filter"` (`country_select` + country trend chart)
 4. **Main composition**: Renders a two-column view with the map on the left and all controls/content on the right, then wraps it in `FastListTemplate` with branding from `LOGO_PATH` (`assets/logo-500px.png`).
 
+---
+
 ### 6. Utilities: `utils/`
 
 The `utils/` package contains lightweight helpers used by visual and data-preparation modules.
+
+---
 
 #### `utils/colors.py`
 
@@ -452,6 +456,8 @@ Provides color-scale logic for map rendering:
 * Samples colors by value (`get_viridis_color`) and supports both `hex` and `rgba` output formats.
 * Includes internal conversion helpers (`_tuple_to_hex`, `_hex_to_rgba`) to standardize color outputs for Plotly and UI styling.
 
+---
+
 #### `utils/flags.py`
 
 Provides country-flag enrichment helpers:
@@ -459,9 +465,13 @@ Provides country-flag enrichment helpers:
 * `iso2_to_flag(iso2_code)` converts ISO 3166-1 alpha-2 codes (e.g., `DE`) into Unicode flag emojis.
 * `add_country_flags(data)` appends a `Flag` column based on `ISO2_Code`, enabling richer labels and hover content in map/chart views.
 
+---
+
 ### 7. Assets: `assets/`
 
 The `assets/` directory contains static image resources used by the dashboard UI.
+
+---
 
 #### Current files
 * `logo-500px.png` — active header logo (`LOGO_PATH`) used by `FastListTemplate`.
@@ -469,13 +479,13 @@ The `assets/` directory contains static image resources used by the dashboard UI
 * `logo-alt-500px.png` — currently unused variant.
 * `logo-birne-500px.png` — currently unused variant.
 
-#### Maintenance note
-
-To keep the active asset set clear, unused variants should be hidden from primary docs/UI references and moved to an archive location (for example `assets/archive/`) when no longer needed for immediate design iteration.
+---
 
 ### 8. Geodata: `geo/`
 
 The `geo/` directory stores geographic boundary data used for map rendering.
+
+---
 
 #### `geo/europe.geojson`
 

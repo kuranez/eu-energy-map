@@ -78,7 +78,92 @@ eu-energy-map/
 
 ## 📖 Documentation
 
-### 1. Main dashboard entry point: `main.py`
+### 1. Main dashboard entry point: `app.py`
+
+`app.py` acts as the orchestrator of the entire application. It initializes the web framework, runs the data ingestion and transformation pipeline, instantiates interactive widgets, binds reactive callbacks to visualization generators, and serves the assembled dashboard.
+
+#### Imports & Packages
+
+The script organizes dependencies into standard library utilities, third-party frameworks, and local modular components:
+
+##### **Standard Library:**
+  * **`pathlib.Path`**: Provides cross-platform, OS-independent path resolution relative to `__file__`. Ensures datasets and GeoJSON files are resolved reliably regardless of the working directory from which `panel serve` is executed.
+  * **`typing.cast`**: Provides static type hinting, explicitly asserting that raw objects returned from data loading conform to `pd.DataFrame` and `gpd.GeoDataFrame` for code clarity and linter validation.
+
+##### **Third-Party Frameworks:**
+  * **`panel (pn)`**: The core reactive dashboard framework. Manages the Bokeh server lifecycle, JavaScript/CSS extension loading, interactive widget synchronization, reactive function decorators (`@pn.depends`), and the template layout.
+  * **`pandas (pd)`**: The primary data manipulation engine used for filtering, slicing, aggregating, and passing structured tabular data to charts.
+  * **`geopandas (gpd)`**: Extends Pandas with geospatial capabilities, managing European country geographic boundaries and geometry attributes as a `GeoDataFrame`.
+
+##### **Application Modules:**
+  * **`data.loader (load_data)`**: Loads raw CSV files and GeoJSON into DataFrames.
+  * **`data.filters (preprocess, filter_data)`**: Merges energy metrics with country boundaries, cleans columns, normalizes country codes, filters for EU member states, and calculates EU-wide aggregate averages.
+  * **`components.widgets (create_widgets)`**: Factory function creating the interactive UI controllers (the Year slider and Country selector).
+  * **`components.map (create_choropleth_map)`**: Generates the interactive Plotly MapLibre choropleth map.
+  * **`components.charts.bar_chart_by_year (create_bar_chart_year)`**: Builds the ranked bar chart for all EU nations in a given year.
+  * **`components.charts.bar_chart_by_country (create_bar_chart_country)`**: Generates the 2004–2024 time-series comparison chart for a selected country.
+  * **`layout.dashboard (build_layout)`**: Assembles charts, widgets, description panes, and branding assets into a structured Panel template.
+
+---
+
+#### Application Workflow
+
+The execution flow of `app.py` follows a 6-stage lifecycle:
+
+```mermaid
+flowchart TD
+    A["1. Panel Extension Setup<br/><code>pn.extension()</code>"] --> B["2. Data Ingest & Preprocessing<br/><code>load_data() ➔ preprocess() ➔ filter_data()</code>"]
+    B --> C["3. Widget Creation<br/><code>create_widgets()</code>"]
+    C --> D["4. Reactive Bindings<br/><code>@pn.depends()</code>"]
+    D --> E["5. Layout Assembly<br/><code>build_layout()</code>"]
+    E --> F["6. Server Deployment<br/><code>template.servable()</code>"]
+```
+
+##### 1. **Panel Initialization (`pn.extension`)**
+   Registers required JavaScript dependencies (`'tabulator'`, `'plotly'`), activates the Material Design UI theme, and sets responsive sizing behavior (`sizing_mode='stretch_width'`).
+
+##### 2. **Loading & Preprocessing Data Pipeline**
+   * Computes absolute paths for both historical (`nrg_ind_ren_linear_old.csv`) and modern (`nrg_ind_ren_linear.csv`) datasets alongside `europe.geojson`.
+   * Loads raw inputs via `load_data(..., return_raw=True)`.
+   * Merges tabular data with geographic polygons using `preprocess()`.
+   * Validates DataFrame types and extracts clean subsets via `filter_data()`:
+     * `df_renewable`: Individual country metrics filtered to EU member states.
+     * `df_eu_total`: Mean annual renewable share across all EU nations.
+
+##### 3. **Widget Creation**
+
+   Calls `create_widgets(df_renewable)` to generate interactive Panel widgets populated with actual data boundaries:
+   * **`year_slider`**: An `IntSlider` spanning years 2004–2024 (defaulting to 2024).
+   * **`country_select`**: A `Select` dropdown populated with unique, sorted EU country names (defaulting to Germany).
+
+##### 4. **Reactive Bindings (`@pn.depends`)**
+
+   Establishes dynamic event listeners linking widget values to visualization update functions:
+   * **`map_view(year)`**: Listens to `year_slider.param.value`, slices `df_renewable` by year, and re-renders the choropleth map.
+   * **`bar_by_year(year)`**: Listens to `year_slider.param.value`, slices by year, and re-renders the annual member state comparison bar chart.
+   * **`bar_by_country(country)`**: Listens to `country_select.param.value`, filters data for that country, and re-renders the 20-year trajectory comparison chart.
+
+###### 5. **Layout Creation**
+
+   Passes the reactive functions and widgets into `build_layout()`, constructing a responsive side-by-side dashboard structure inside a `FastListTemplate` with navigation tabs, descriptive markdown, and image assets.
+
+##### 6. **Serving the Application (`.servable()`)**
+
+   Attaches the completed template to Bokeh's server document context via `template.servable()`.
+
+---
+
+#### Running the Application
+
+Launch the development server from the repository root:
+
+```bash
+panel serve app.py --show --autoreload
+```
+
+**Options:**
+* `--show`: Automatically opens the dashboard in your default browser at `http://localhost:5006/app`.
+* `--autoreload`: Automatically reloads the application when project files are modified.
 
 ### 2. Configuration: `config.py`
 

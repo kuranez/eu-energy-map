@@ -38,13 +38,13 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 ## ⚙️ Features
 
 - Interactive dashboard powered by **Panel** and **Plotly**
-    
+
 - Time-series visualization of renewable energy shares by country and category
-    
+
 - Geospatial mapping using **GeoJSON** and **GeoPandas**
-    
+
 - Downloadable datasets and smooth filtering options
-    
+
 
 ###  Example Charts
 ---
@@ -65,7 +65,7 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 **Bar Charts**
 - Unified display of **EU Total Average** across all charts, with a toggle option to show/hide it.
 - Minor improvements to hover templates and trace labels.
-	 
+
 **Map**
 - Implemented hover templates displaying **country flags and data**.
 - Recentered map and adjusted zoom.
@@ -87,13 +87,13 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 ## 📦 Python Dependencies
 
 - **Core:** `os`, `json`
-    
+
 - **Data Handling:** `pandas`, `geopandas`
-    
+
 - **Visualization:** `plotly.express`, `plotly.graph_objects`, `plotly.io`
-    
+
 - **Dashboard UI:** `panel`
-    
+
 
 ---
 
@@ -102,26 +102,26 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 ### 1. Renewable Energy Data (Eurostat)
 
 - **File:** `nrg_ind_ren_linear.csv`
-    
+
 - **Source:** [Eurostat – Renewable Energy](https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en)
-    
+
 - **Years:** 2004–2022
-    
+
 - **Columns:** Country codes, energy type, unit, value (%), flags
-    
+
 - **Categories:** Total renewables, electricity, heating/cooling, transport
-    
+
 
 ### 2. Geographic Boundaries (GISCO - Eurostat)
 
 - **File:** `europe.geojson`
-    
+
 - **Source:** [GISCO – Eurostat](https://ec.europa.eu/eurostat/web/gisco/geodata/administrative-units/countries)
-    
+
 - **Year:** 2024
-    
+
 - **Format:** GeoJSON (EPSG:4326), scale 1:20M
-    
+
 
 ---
 
@@ -158,7 +158,7 @@ EU-Energy-Map/
 ## 📙 Documentation
 
 **Code documentation is provided as a Jupyter notebook.**  
-You can view it here: [documentation.ipynb](documentation.ipynb) 
+You can view it here: [documentation.ipynb](documentation.ipynb)
 
 
 ## 📕 Resources
@@ -171,7 +171,7 @@ You can view it here: [documentation.ipynb](documentation.ipynb)
 
 ## 📘 License
 
-This project is open source and available under the **MIT License**. 
+This project is open source and available under the **MIT License**.
 You may modify, distribute, and use it freely in your own projects.
 
 ---

@@ -7,49 +7,33 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 ## 📦 Python Dependencies
 
 - **Core:** `os`, `json`
-
 - **Data Handling:** `pandas`, `geopandas`
-
 - **Visualization:** `plotly.express`, `plotly.graph_objects`, `plotly.io`
-
 - **Dashboard UI:** `panel`
 
 ## 📊 Datasets
 
 ### 1. Renewable Energy Data (Eurostat) - 2004–2022
 
-- **File:** `nrg_ind_ren_linear.csv`
-
+- **File:** `nrg_ind_ren_linear_old.csv`
 - **Source:** [Eurostat – Renewable Energy](https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en)
-
 - **Years:** 2004–2022
-
 - **Columns:** Country codes, energy type, unit, value (%), flags
-
 - **Categories:** Total renewables, electricity, heating/cooling, transport
 
-
-### 2. Renewable Energy Data (Eurostat) - 20xx–2024
+### 2. Renewable Energy Data (Eurostat) - 2015–2024
 
 - **File:** `nrg_ind_ren_linear.csv`
-
 - **Source:** [Eurostat – Renewable Energy](https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en)
-
-- **Years:** 20xx–2024
-
-- **Columns:** Country codes, energy type, unit, value (%), flags
-
-- **Categories:** Total renewables, electricity, heating/cooling, transport
-
+- **Years:** 2015–2024
+- **Columns:** Country names, energy type, unit, value (%), flags, confidentiality status
+- **Categories:** Total renewables
 
 ### 3. Geographic Boundaries (GISCO - Eurostat)
 
 - **File:** `europe.geojson`
-
 - **Source:** [GISCO – Eurostat](https://ec.europa.eu/eurostat/web/gisco/geodata/administrative-units/countries)
-
 - **Year:** 2024
-
 - **Format:** GeoJSON (EPSG:4326), scale 1:20M
 
 ## 📁 Contents
@@ -60,10 +44,15 @@ eu-energy-map/
 ├── app.py                            # Main dashboard entry point
 ├── config.py                         # Configurations (tokens, paths, etc)
 |
+├── docs/
+│   ├── documentation.md              # Project Documentation
+│   └── notebook.ipynb                # Interactive Notebook
+|
 ├── data/
 │   ├── loader.py                     # Loads and merges CSV/GeoJSON data
 │   ├── filters.py                    # Preprocessing and filtering logic
-│   └── nrg_ind_ren_linear.csv        # Eurostat renewable energy data
+│   ├── nrg_ind_ren_linear_old.csv    # Eurostat renewable energy data
+│   └── nrg_ind_ren_linear.csv        
 |
 ├── components/
 │   ├── charts/
@@ -81,7 +70,7 @@ eu-energy-map/
 |
 ├── assets/
 │   ├── europe-renewables-500px.png   # Dashboard image
-│   └─── logo-500px.png               # Logo
+│   └── logo-500px.png               # Logo
 |
 └── geo/
     └── europe.geojson                # European country boundaries (GeoJSON)

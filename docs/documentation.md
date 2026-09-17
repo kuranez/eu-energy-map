@@ -167,14 +167,49 @@ panel serve app.py --show --autoreload
 
 ### 2. Configuration: `config.py`
 
+This is the configuration file.
+
+Contains paths and configures panel.
+
 ### 3. Data Loading & Filtering Pipeline: `data/`
+
+This folder contains Pipeline: filters.py & loader.py.
+
+Dataset nrg_ind_ren_linear_old.csv & nrg_ind_ren_linear.csv from eurostat.
+
+(link above)
+
+Note: remove other dataset, keep for refactor.
 
 ### 4. Dashboard Components: `components/`
 
+Contains map.py & widgets.py.
+
 ### 5. Dashboard Layout: `layout/`
+
+**Methods**
+build_layout
+
+steps/Components
+- title_md
+- description_md
+- then combination of images and text
+- organisation in Tabs
+- final layout
+- Template
+
+returns template used for app
 
 ### 6. Utilities: `utils/`
 
+helpers
+- colors.py
+- flags.py
+
 ### 7. Assets: `assets/`
 
+contains images (note: remove/hide unused images, archive them)
+
 ### 8. Geodata: `geo/`
+
+contains geojson for europe

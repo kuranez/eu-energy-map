@@ -8,12 +8,16 @@ Built with **Python**, **HoloViz Panel**, and **Plotly**, the application integr
 - **Benchmark national progress:** Compare individual member states directly against EU-wide averages over a 20-year transition timeline.
 - **Seamless data exploration:** Filter instantly by year and country through a responsive, reactive interface.
 
+---
+
 ## 📦 Python Dependencies
 
 - **Core:** `os`, `json`
 - **Data Handling:** `pandas`, `geopandas`
 - **Visualization:** `plotly.express`, `plotly.graph_objects`, `plotly.io`
 - **Dashboard UI:** `panel`
+
+---
 
 ## 📊 Datasets
 
@@ -39,6 +43,8 @@ Built with **Python**, **HoloViz Panel**, and **Plotly**, the application integr
 - **Source:** [GISCO – Eurostat](https://ec.europa.eu/eurostat/web/gisco/geodata/administrative-units/countries)
 - **Year:** 2024
 - **Format:** GeoJSON (EPSG:4326), scale 1:20M
+
+---
 
 ## 📁 Contents
 
@@ -79,6 +85,8 @@ eu-energy-map/
 └── geo/
     └── europe.geojson                # European country boundaries (GeoJSON)
 ```
+
+---
 
 ## 📖 Documentation
 
@@ -272,7 +280,7 @@ flowchart TD
   * Concatenates historical and modern records into a single DataFrame.
   * When `return_raw=True` is passed (as in `app.py`), returns the tuple `(raw_data, europe_gdf)`.
 
----
+
 
 #### 2. Preprocessing & Aggregation: `filters.py`
 

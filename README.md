@@ -108,8 +108,19 @@ The **EU Energy Map** transforms official Eurostat datasets into an interactive 
 
 - **Categories:** Total renewables, electricity, heating/cooling, transport
 
+### 2. Renewable Energy Data (Eurostat) - 2015–2024
 
-### 2. Geographic Boundaries (GISCO - Eurostat)
+- **File:** `nrg_ind_ren_linear.csv`
+
+- **Source:** [Eurostat – Renewable Energy](https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en)
+
+- **Years:** 2015–2024
+
+- **Columns:** Country names, energy type, unit, value (%), flags, confidentiality status
+
+- **Categories:** Total renewables
+
+### 3. Geographic Boundaries (GISCO - Eurostat)
 
 - **File:** `europe.geojson`
 

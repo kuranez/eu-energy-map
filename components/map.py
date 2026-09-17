@@ -29,7 +29,7 @@ def create_choropleth_map(df_year):
         fig (Figure): A Plotly Figure object containing the choropleth map.
     """
 
-    fig = go.Figure(go.Choroplethmapbox(
+    fig = go.Figure(go.Choroplethmap(
         # Load the GeoJSON file for Europe
         geojson=json.load(open(GEOJSON_PATH)),
         # Use the 'Code' column for locations
@@ -61,14 +61,12 @@ def create_choropleth_map(df_year):
     # Update the layout of the map
     # Set the mapbox style, zoom level, and center
     fig.update_layout(
-        # Set the Mapbox access token
-        mapbox_accesstoken=MAPBOX_TOKEN,
-        # Use a predefined Mapbox style
-        mapbox_style="carto-positron",
+        # Use a predefined Map style
+        map_style="carto-positron",
         # Set the initial zoom level and center of the map
-        mapbox_zoom=2.75,
+        map_zoom=2.75,
         # Center the map on Europe
-        mapbox_center={"lat": 56, "lon": 8},
+        map_center={"lat": 56, "lon": 8},
         # Remove margins around the map
         margin={"r": 0, "t": 0, "l": 0, "b": 0}
     )

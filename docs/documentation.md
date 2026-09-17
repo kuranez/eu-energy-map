@@ -90,9 +90,11 @@ eu-energy-map/
 
 ## 📖 Documentation
 
-### 1. Main dashboard entry point: `app.py`
+### I. Main dashboard entry point: `app.py`
 
 `app.py` acts as the orchestrator of the entire application. It initializes the web framework, runs the data ingestion and transformation pipeline, instantiates interactive widgets, binds reactive callbacks to visualization generators, and serves the assembled dashboard.
+
+---
 
 #### Imports & Packages
 
@@ -179,9 +181,11 @@ panel serve app.py --show --autoreload
 
 ---
 
-### 2. Configuration: `config.py`
+### II. Configuration: `config.py`
 
 The `config.py` module serves as the central configuration hub for the application. It establishes global UI extension settings, manages external API credentials, and dynamically resolves absolute paths to static visual assets. Centralizing these parameters ensures that filepaths and configurations are not hardcoded across multiple components.
+
+---
 
 #### Key Configurations
 
@@ -214,7 +218,7 @@ Uses Python's `pathlib` to anchor asset paths relative to `config.py` itself, en
 
 ---
 
-### 3. Data Loading & Filtering Pipeline: `data/`
+### III. Data Loading & Filtering Pipeline: `data/`
 
 The `data/` directory houses the core data ingestion, harmonization, and transformation pipeline. Its primary role is to bridge raw, multi-format Eurostat exports with geographic boundaries, producing clean, standardized DataFrames for the visualization layer.
 
@@ -227,14 +231,14 @@ The pipeline is split into two specialized modules:
 
 #### Imports & Dependencies
 
-##### `data/loader.py`
+##### 👉 **`data/loader.py`**
 * **`os`**: Performs filesystem verification (`os.path.exists`, `os.PathLike`) to validate that dataset CSVs and GeoJSON files exist before attempting to parse them.
 * **`typing (Union, Tuple, Sequence)`**: Enforces strict type signatures, supporting flexible input arguments (single file path string or sequence of file paths) and declaring return types (`Union[pd.DataFrame, Tuple[pd.DataFrame, gpd.GeoDataFrame]]`).
 * **`pandas (pd)`**: Used for reading CSV files (`read_csv`), concatenating disparate dataset versions (`concat`), column manipulation, and dictionary-based remapping.
 * **`geopandas (gpd)`**: Parses European boundary geometries from GeoJSON (`read_file`) and manages them within a `GeoDataFrame`.
 * **`utils.flags (iso2_to_flag)`**: Converts two-letter ISO country codes into corresponding unicode flag emojis.
 
-##### `data/filters.py`
+##### 👉 **`data/filters.py`**
 * **`pandas (pd)`**: Drives the core data transformations—spatial/tabular merging (`merge`), dropping metadata columns (`drop`), deduplicating records (`drop_duplicates`), coercing numeric types (`to_numeric`), and computing annual EU averages (`groupby`).
 * **`utils.flags (add_country_flags)`**: Vectorized utility that appends national flag emojis to the DataFrame based on sanitized country codes.
 
@@ -265,14 +269,14 @@ flowchart TD
 
 #### 1. Ingestion & Reconciliation: `loader.py`
 
-##### **`_normalize_frame_columns(frame)`**  
+##### ⚙️ **Method documentation: `_normalize_frame_columns(frame)`**  
 
   Standardizes structural discrepancies across different Eurostat export versions:
   * Detects and harmonizes legacy column names (e.g., renames `siec` to `nrg_bal`).
   * Normalizes category labels (`REN`, `R5110-5150_W6000RIS`) to `'Renewable energy - overall'`.
   * Converts time dimensions (`TIME_PERIOD`) into numeric integers.
 
-##### **`load_data(data_path, geo_path, return_raw=False)`**  
+##### ⚙️ **Method documentation: `load_data(data_path, geo_path, return_raw=False)`**  
 
   The primary ingestion function:
   * Reads `europe.geojson` into a GeoPandas `GeoDataFrame`.
@@ -284,7 +288,7 @@ flowchart TD
 
 #### 2. Preprocessing & Aggregation: `filters.py`
 
-##### **`preprocess(data, europe)`**
+##### ⚙️ **Method documentation: `preprocess(data, europe)`**
 
   Prepares the raw tabular and spatial data for visualization:
   * Merges the energy data with European country geometries on `CNTR_ID == geo_key`.
@@ -299,7 +303,7 @@ flowchart TD
   * Appends ISO2 country codes (converting Greece `EL` to `GR` for emoji compatibility) and attaches national flag emojis via `add_country_flags()`.
   * Deduplicates overlapping records between the historical and modern files (`keep='last'`).
 
-##### **`filter_data(merged)`**
+##### ⚙️ **Method documentation: `filter_data(merged)`**
 
   Separates the preprocessed data into two specific visual targets:
   1. **`df_renewable`**: Filters records exclusively to the official 27 EU member states (`AT`, `BE`, `BG`, `HR`, `CY`, `CZ`, `DK`, `EE`, `FI`, `FR`, `DE`, `EL`, `HU`, `IE`, `IT`, `LV`, `LT`, `LU`, `MT`, `NL`, `PL`, `PT`, `RO`, `SK`, `SI`, `ES`, `SE`) for `'Renewable Energy Total'`.
@@ -309,34 +313,201 @@ flowchart TD
 
 #### Active Datasets in Pipeline
 
-##### **`data/nrg_ind_ren_linear_old.csv`**:
+##### 👉 **`data/nrg_ind_ren_linear_old.csv`**:
 Eurostat historical baseline dataset covering years **2004–2022**. Contains sectoral breakdowns (`REN`, `REN_ELC`, `REN_HEAT_CL`, `REN_TRA`) and 2-letter country codes.
 
-##### **`data/nrg_ind_ren_linear.csv`**:
+##### 👉 **`data/nrg_ind_ren_linear.csv`**:
 Eurostat modern update covering years **2015–2024**. Provides the latest overall renewable share figures indexed by full country names.
 
 📌 _For further information see above section on datasets at the beginning of the document._
 
 ---
 
-### 4. Dashboard Components: `components/`
 
-Contains map.py & widgets.py.
+### IV. Dashboard Components: `components/`
 
-### 5. Dashboard Layout: `layout/`
+The `components/` directory encapsulates all visual presentation elements and user input controls. By isolating UI widgets, geospatial mapping, and charts from the main layout and data pipeline, each component remains modular, reusable, and easily testable.
 
-**Methods**
-build_layouts
+---
 
-steps/Components
-- title_md
-- description_md
-- then combination of images and text
-- organisation in Tabs
-- final layout
-- Template
+#### 1. Geospatial Map Component: `components/map.py`
 
-returns template used for app
+This module constructs the interactive European choropleth map that visually displays renewable energy adoption by country for any selected year.
+
+##### Imports & Dependencies
+* **`plotly.graph_objects as go`**: Generates the high-level `Figure` container and the underlying tile-based `Choroplethmap` trace.
+* **`json`**: Loads and parses the European boundary polygons from `geo/europe.geojson` into a Python dictionary.
+* **`pathlib.Path`**: Computes the absolute path to the GeoJSON file relative to `__file__`.
+* **`config.MAPBOX_TOKEN`**: Holds authentication tokens if proprietary Mapbox basemap styles are configured.
+* **`utils.colors.get_colorscale`**: Supplies the standardized global `Viridis` colorscale for cohesive theming across the app.
+
+##### Module Constants
+* **`GEOJSON_PATH`**: Absolute filesystem path resolving to `geo/europe.geojson`.
+
+##### ⚙️ Method Documentation: `create_choropleth_map()`
+
+```python
+def create_choropleth_map(df_year: pd.DataFrame) -> go.Figure:
+```
+
+* **Description:**  
+  Renders an interactive choropleth map of Europe color-coded by renewable energy share (0%–100%) for a given year.
+* **Parameters:**  
+  * `df_year` (*pd.DataFrame*): DataFrame pre-filtered to a single target year. Must contain columns `Code` (`CNTR_ID`), `Renewable Percentage`, `Country`, and `Flag`.
+* **Returns:**  
+  * `fig` (*go.Figure*): A Plotly Figure object configured with the choropleth trace and map layout.
+* **Key Implementation Details:**
+  * **Feature Binding:** Binds `df_year['Code']` to the GeoJSON boundary IDs via `featureidkey="properties.CNTR_ID"`.
+  * **Normalized Color Scale:** Sets `zmin=0` and `zmax=100` so colors remain consistent and comparable across different years.
+  * **Custom Hover Tooltip:** Displays the country name, flag emoji, and percentage formatted to one decimal place using `customdata=df_year[['Country', 'Flag']].values`.
+  * **Map Layout:** Configures MapLibre tile style (`map_style="carto-positron"` or `"carto-positron-nolabels"`), sets an initial European focal center (`{"lat": 56, "lon": 8}`), locks the zoom level to `2.75`, and removes outer margins (`margin={"r": 0, "t": 0, "l": 0, "b": 0}`).
+
+---
+
+#### 2. User Input Controls: `components/widgets.py`
+
+This module encapsulates the creation of interactive filter controls that allow users to drive dashboard updates.
+
+##### Imports & Dependencies
+* **`panel as pn`**: Supplies the reactive UI widget primitives (`IntSlider`, `Select`).
+
+##### ⚙️ Method Documentation
+
+```python
+def create_widgets(df_renewable: pd.DataFrame) -> tuple[pn.widgets.IntSlider, pn.widgets.Select]:
+```
+
+* **Description:**  
+  Instantiates and configures the input controllers used to filter data across the dashboard.
+* **Parameters:**  
+  * `df_renewable` (*pd.DataFrame*): Cleaned renewable energy DataFrame. Used to dynamically query the unique list of available countries.
+* **Returns:**  
+  * `tuple`: A two-element tuple containing `(year_slider, country_select)`:
+    1. **`year_slider` (`pn.widgets.IntSlider`)**:
+       * Controls the target year for both the map and the annual comparison bar chart.
+       * Configured with `start=2004`, `end=2024`, `step=1`, and defaults to `value=2024`.
+    2. **`country_select` (`pn.widgets.Select`)**:
+       * Controls the focus nation for the 20-year time-series comparison chart.
+       * Populated dynamically with sorted, unique country names (`sorted(df_renewable['Country'].unique().tolist())`), defaulting to `value='Germany'`.
+
+---
+
+#### 3. Chart Visualizations: `components/charts/`
+
+In addition to the map and widgets, the `components/charts/` subpackage houses the secondary analytical figures:
+
+* **`bar_chart_by_year.py` (`create_bar_chart_year(df_year, year)`):**  
+  Generates a sorted horizontal/vertical bar chart ranking all EU nations by renewable percentage for the selected year, overlaid with a benchmark dashed line representing the EU total average.
+* **`bar_chart_by_country.py` (`create_bar_chart_country(df_eu_total, df_country, country)`):**  
+  Generates a multi-trace time-series chart showing an individual country’s 20-year trajectory (2004–2024) plotted directly against the EU-wide average line.
+
+---
+
+### V. Dashboard Layout: `layout/dashboard.py`
+
+The `layout/dashboard.py` module defines the visual hierarchy and structure of the dashboard. It brings together reactive chart components, interactive widgets, descriptive markdown, and image assets into a responsive, cohesive web layout wrapped in a Material-styled Panel template.
+
+---
+
+#### Imports & Dependencies
+* **`panel as pn`**: Provides structural layout containers (`pn.Row`, `pn.Column`, `pn.Tabs`), media panes (`pn.pane.Markdown`, `pn.pane.PNG`), and the top-level application template (`pn.template.FastListTemplate`).
+* **`panel.pane.Plotly`**: Specialized pane wrapper optimized for rendering responsive Plotly figures within Panel layouts.
+* **`config (LOGO_PATH, PICTURE_PATH)`**: Supplies absolute paths to static visual assets (header logo and description infographic).
+
+---
+
+#### ⚙️ Method Documentation: `build_layout()`
+
+```python
+def build_layout(
+    interactive_map,
+    interactive_bar_year,
+    interactive_bar_country,
+    year_slider,
+    country_select
+) -> pn.template.FastListTemplate:
+```
+
+* **Description:**  
+  Constructs and returns the complete dashboard layout as a styled HoloViz Panel `FastListTemplate`.
+* **Parameters:**  
+  * `interactive_map`: Reactive function returning the European choropleth map figure.
+  * `interactive_bar_year`: Reactive function returning the annual member state comparison bar chart.
+  * `interactive_bar_country`: Reactive function returning the 20-year country trajectory chart.
+  * `year_slider` (*pn.widgets.IntSlider*): Interactive slider controlling the year filter.
+  * `country_select` (*pn.widgets.Select*): Dropdown selector controlling the country filter.
+* **Returns:**  
+  * `template` (*pn.template.FastListTemplate*): Ready-to-serve dashboard template.
+
+---
+
+#### Step-by-Step Layout Assembly
+
+The layout is built progressively in six modular steps:
+
+```mermaid
+flowchart TD
+    A["1. Title Pane<br/><code>title_md</code>"]
+    B["2. Description Pane<br/><code>description_md</code>"]
+    C["3. Image Asset<br/><code>description_png</code>"]
+    B & C --> D["Side-by-side Info Box<br/><code>pn.Row(description_md, description_png)</code>"]
+
+    W1["year_slider"] & C1["interactive_bar_year"] --> T1["Tab 1: Year Filter"]
+    W2["country_select"] & C2["interactive_bar_country"] --> T2["Tab 2: Country Filter"]
+    T1 & T2 --> E["4. Filter & Chart Tabs<br/><code>pn.Tabs()</code>"]
+
+    MAP["interactive_map<br/>(Plotly Pane)"]
+    A & E & D --> RIGHT["Right Column<br/><code>pn.Column()</code>"]
+    MAP & RIGHT --> F["5. Main Grid Layout<br/><code>pn.Row(Left: Map, Right: Column)</code>"]
+    F --> G["6. Application Shell<br/><code>FastListTemplate(main=[layout])</code>"]
+```
+
+##### 1. Title Pane (`title_md`)
+Creates a prominent headline pane using `pn.pane.Markdown`:
+```python
+title_md = pn.pane.Markdown("# 🌱 Renewable Energy in the European Union: Explore developments across Europe")
+```
+
+##### 2. Description Pane (`description_md`)
+Renders project documentation, Eurostat data citation links, usage guidance, and the GitHub repository link. Includes scoped CSS rules to format typography:
+```html
+<style>
+.custom-desc { font-size: 16px; }
+.custom-desc h3 { font-size: 1.05em; }
+</style>
+```
+
+##### 3. Combining Text & Image (`description`)
+Pairs the descriptive markdown with the 250×250px renewable energy infographic (`assets/europe-renewables-500px.png`) horizontally in a `pn.Row`:
+```python
+description_png = pn.pane.PNG(str(PICTURE_PATH), width=250, height=250)
+description = pn.Row(description_md, description_png)
+```
+
+##### 4. Organization into Tabs (`tabs`)
+Organizes the analytical modes into a tabbed navigation interface (`pn.Tabs`), pairing each filter widget with its associated reactive chart:
+* **Tab 1 ("Year Filter"):** Bundles `year_slider` above `Plotly(interactive_bar_year)`.
+* **Tab 2 ("Country Filter"):** Bundles `country_select` above `Plotly(interactive_bar_country)`.
+
+##### 5. Final Two-Column Layout (`layout`)
+Arranges the dashboard into a side-by-side split screen using `pn.Row`:
+* **Left Column:** The interactive map pane (`Plotly(interactive_map)`), configured with `sizing_mode="stretch_height"` to maximize vertical screen space.
+* **Right Column:** A `pn.Column` containing the title pane, the tabbed chart controls, and the descriptive text/image box (`sizing_mode="stretch_both"`).
+
+##### 6. FastListTemplate Shell (`template`)
+Wraps the entire visual structure inside Panel’s responsive `FastListTemplate`:
+```python
+template = pn.template.FastListTemplate(
+    title="EU Energy Map",
+    logo=str(LOGO_PATH),
+    theme="default",
+    theme_toggle=False,
+    sidebar=[],
+    main=[layout]
+)
+```
+* **Header Branding:** Displays `"EU Energy Map"` and loads `logo-500px.png` in the navigation bar.
+* **Maximized Canvas:** Leaves `sidebar=[]` empty to allocate full screen width to the two-column main canvas.
 
 ### 6. Utilities: `utils/`
 

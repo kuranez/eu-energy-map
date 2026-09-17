@@ -165,11 +165,42 @@ panel serve app.py --show --autoreload
 * `--show`: Automatically opens the dashboard in your default browser at `http://localhost:5006/app`.
 * `--autoreload`: Automatically reloads the application when project files are modified.
 
+---
+
 ### 2. Configuration: `config.py`
 
-This is the configuration file.
+The `config.py` module serves as the central configuration hub for the application. It establishes global UI extension settings, manages external API credentials, and dynamically resolves absolute paths to static visual assets. Centralizing these parameters ensures that filepaths and configurations are not hardcoded across multiple components.
 
-Contains paths and configures panel.
+#### Key Configurations
+
+##### 1. Panel Extension Setup (`pn.extension`)
+Initializes the HoloViz Panel runtime environment before dashboard components are loaded:
+```python
+pn.extension('tabulator', 'plotly', design='material')
+```
+* **`'plotly'`**: Injects the Plotly.js rendering engine into the browser runtime, enabling interactive WebGL/MapLibre map and chart panes.
+* **`'tabulator'`**: Loads the Tabulator JavaScript dependency for high-performance interactive data tables.
+* **`design='material'`**: Enforces Google Material Design styling across all dashboard widgets, inputs, and template containers for a cohesive look.
+
+##### 2. Dynamic Filesystem Path Resolution (`pathlib.Path`)
+Uses Python's `pathlib` to anchor asset paths relative to `config.py` itself, ensuring static assets load reliably across operating systems and deployment environments (local development, Docker containers, or remote servers):
+
+* **`BASE_DIR`**: Resolves the root directory of the repository (`Path(__file__).parent`).
+* **`ASSETS_DIR`**: Points to the visual media folder (`assets/`).
+* **`LOGO_PATH`**: Path to `assets/logo-500px.png`, used as the header emblem in the dashboard template.
+* **`PICTURE_PATH`**: Path to `assets/europe-renewables-500px.png`, displayed as the featured graphic alongside the dashboard description.
+
+---
+
+#### Module Usage Overview
+
+| Variable / Function | Consumer File | Purpose |
+| :--- | :--- | :--- |
+| **`pn.extension(...)`** | Global runtime | Pre-registers client-side dependencies before UI rendering |
+| **`LOGO_PATH`** | [layout/dashboard.py](file:///home/kuranez/Projects_new/python/eu-energy-map/layout/dashboard.py) | Configures top navigation bar logo in `FastListTemplate` |
+| **`PICTURE_PATH`** | [layout/dashboard.py](file:///home/kuranez/Projects_new/python/eu-energy-map/layout/dashboard.py) | Renders thumbnail preview image in the descriptive side-panel |
+
+---
 
 ### 3. Data Loading & Filtering Pipeline: `data/`
 
@@ -188,7 +219,7 @@ Contains map.py & widgets.py.
 ### 5. Dashboard Layout: `layout/`
 
 **Methods**
-build_layout
+build_layouts
 
 steps/Components
 - title_md

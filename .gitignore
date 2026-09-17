@@ -6,3 +6,5 @@ utils/__pycache__
 layout/__pycache__
 .gitignore
 .vscode
+data/nrg_ind_rfce_linear_old.csv
+data/nrg_ind_rfce_linear.csv

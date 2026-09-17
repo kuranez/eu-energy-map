@@ -21,7 +21,14 @@
     </a>
 </p>
 
-An interactive dashboard that visualizes Eurostat data on renewable energy developments across European countries. Built with Python and Panel, the web app provides an intuitive interface to explore renewable energy trends from 2004 to 2024.
+## 📌 Summary
+
+The **EU Energy Map** transforms official Eurostat datasets into an interactive web dashboard for monitoring clean energy transitions across Europe (2004–2024).
+
+- **Geospatial Mapping:** Interactive choropleth maps powered by Plotly (MapLibre) and Eurostat GeoJSON boundaries.
+- **Comparative Benchmarking:** Real-time visual comparison of individual member states against EU27 aggregate averages.
+- **Data Harmonization:** Automated ETL pipeline standardizing historical (2004–2022) and modern (2015–2024) Eurostat energy metrics.
+- **Reactive UI:** Fast, reactive layout built with HoloViz Panel and Material Design components.
 
 ## 🌐 Web App
 
@@ -34,16 +41,6 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 > ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/app.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/app.png)
 
 ---
-
-## ⚙️ Features
-
-- Interactive dashboard powered by **Panel** and **Plotly**
-
-- Time-series visualization of renewable energy shares by country and category
-
-- Geospatial mapping using **GeoJSON** and **GeoPandas**
-
-- Downloadable datasets and smooth filtering options
 
 
 ###  Example Charts
@@ -173,18 +170,6 @@ You can view it here: [documentation.ipynb](documentation.ipynb)
 
 This project is open source and available under the **MIT License**.
 You may modify, distribute, and use it freely in your own projects.
-
----
-
-## 📓 Jupyter Notebook Version (Previous Release)
-
-A standalone Jupyter Notebook version of the EU Energy Map dashboard is available from a previous release:
-
-> [**Download Notebook Release v1.1**](https://github.com/kuranez/eu-energy-map/releases/tag/nb-1.1)
-
-- Run the notebook locally to explore and visualize Eurostat renewable energy data without setting up the full web app.
-- Includes interactive charts and geospatial mapping using the same datasets.
-- Ideal for experimentation, prototyping, or educational use.
 
 
 ---

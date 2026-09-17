@@ -1,8 +1,12 @@
 # Documentation: EU Energy Map
 
-## 📌 Summary
+## Project Summary
 
-An interactive dashboard that visualizes Eurostat data on renewable energy developments across European countries. Built with Python and Panel, the web app provides an intuitive interface to explore renewable energy trends from 2004 to 2024.
+**EU Energy Map** is an interactive geospatial dashboard for tracking and analyzing renewable energy adoption across the European Union from 2004 to 2024.
+Built with **Python**, **HoloViz Panel**, and **Plotly**, the application integrates Eurostat data and GISCO geographic boundaries into a cohesive analytical tool. It enables policymakers, researchers, and citizens to:
+- **Explore spatial disparities:** Visualize country-by-country renewable adoption using dynamic choropleth maps.
+- **Benchmark national progress:** Compare individual member states directly against EU-wide averages over a 20-year transition timeline.
+- **Seamless data exploration:** Filter instantly by year and country through a responsive, reactive interface.
 
 ## 📦 Python Dependencies
 
@@ -204,13 +208,108 @@ Uses Python's `pathlib` to anchor asset paths relative to `config.py` itself, en
 
 ### 3. Data Loading & Filtering Pipeline: `data/`
 
-This folder contains Pipeline: filters.py & loader.py.
+The `data/` directory houses the core data ingestion, harmonization, and transformation pipeline. Its primary role is to bridge raw, multi-format Eurostat exports with geographic boundaries, producing clean, standardized DataFrames for the visualization layer.
 
-Dataset nrg_ind_ren_linear_old.csv & nrg_ind_ren_linear.csv from eurostat.
 
-(link above)
+The pipeline is split into two specialized modules:
+1. **`loader.py`**: Handles file retrieval, schema normalization, country code reconciliation, and multi-file concatenation.
+2. **`filters.py`**: Merges tabular metrics with country geometries, standardizes category terminology, filters for official EU member states, and calculates aggregate benchmarks.
 
-Note: remove other dataset, keep for refactor.
+---
+
+#### Imports & Dependencies
+
+##### `data/loader.py`
+* **`os`**: Performs filesystem verification (`os.path.exists`, `os.PathLike`) to validate that dataset CSVs and GeoJSON files exist before attempting to parse them.
+* **`typing (Union, Tuple, Sequence)`**: Enforces strict type signatures, supporting flexible input arguments (single file path string or sequence of file paths) and declaring return types (`Union[pd.DataFrame, Tuple[pd.DataFrame, gpd.GeoDataFrame]]`).
+* **`pandas (pd)`**: Used for reading CSV files (`read_csv`), concatenating disparate dataset versions (`concat`), column manipulation, and dictionary-based remapping.
+* **`geopandas (gpd)`**: Parses European boundary geometries from GeoJSON (`read_file`) and manages them within a `GeoDataFrame`.
+* **`utils.flags (iso2_to_flag)`**: Converts two-letter ISO country codes into corresponding unicode flag emojis.
+
+##### `data/filters.py`
+* **`pandas (pd)`**: Drives the core data transformations—spatial/tabular merging (`merge`), dropping metadata columns (`drop`), deduplicating records (`drop_duplicates`), coercing numeric types (`to_numeric`), and computing annual EU averages (`groupby`).
+* **`utils.flags (add_country_flags)`**: Vectorized utility that appends national flag emojis to the DataFrame based on sanitized country codes.
+
+---
+
+#### Data Pipeline Workflow
+
+```mermaid
+flowchart TD
+    subgraph Ingestion ["1. Data Ingestion (loader.py)"]
+        A["nrg_ind_ren_linear_old.csv<br/>(2004–2022, ISO codes)"] --> C["_normalize_frame_columns()"]
+        B["nrg_ind_ren_linear.csv<br/>(2015–2024, Full names)"] --> C
+        C --> D["Country Mapping Reconciler<br/>(Names/ISO ➔ CNTR_ID)"]
+        D --> E["pd.concat() ➔ raw_data"]
+        GEO["europe.geojson"] --> GDF["gpd.read_file() ➔ europe_gdf"]
+    end
+
+    subgraph Transformation ["2. Transformation & Filtering (filters.py)"]
+        E & GDF --> F["preprocess()"]
+        F --> G["• Merge tabular + spatial<br/>• Clean & round types<br/>• Standardize energy categories<br/>• Add flag emojis (EL➔GR)"]
+        G --> H["filter_data()"]
+        H --> I["df_renewable<br/>(EU27 Country Data)"]
+        H --> J["df_eu_total<br/>(Annual EU-wide Means)"]
+    end
+```
+
+---
+
+#### 1. Ingestion & Reconciliation: `loader.py`
+
+##### **`_normalize_frame_columns(frame)`**  
+
+  Standardizes structural discrepancies across different Eurostat export versions:
+  * Detects and harmonizes legacy column names (e.g., renames `siec` to `nrg_bal`).
+  * Normalizes category labels (`REN`, `R5110-5150_W6000RIS`) to `'Renewable energy - overall'`.
+  * Converts time dimensions (`TIME_PERIOD`) into numeric integers.
+
+##### **`load_data(data_path, geo_path, return_raw=False)`**  
+
+  The primary ingestion function:
+  * Reads `europe.geojson` into a GeoPandas `GeoDataFrame`.
+  * **Reconciles Country Identifiers:** Eurostat's modern file uses full country names (e.g., `"Germany"`), while the historical file uses 2-letter codes (e.g., `"DE"`). `load_data` dynamically builds a mapping table from the GeoDataFrame (`NAME_ENGL`, `ISO3_CODE`, `CNTR_ID`) to unify all country references under a consistent `CNTR_ID` key (`geo_key`).
+  * Concatenates historical and modern records into a single DataFrame.
+  * When `return_raw=True` is passed (as in `app.py`), returns the tuple `(raw_data, europe_gdf)`.
+
+---
+
+#### 2. Preprocessing & Aggregation: `filters.py`
+
+##### **`preprocess(data, europe)`**
+
+  Prepares the raw tabular and spatial data for visualization:
+  * Merges the energy data with European country geometries on `CNTR_ID == geo_key`.
+  * Renames technical column keys to user-friendly titles:
+    * `TIME_PERIOD` to `Year`
+    * `OBS_VALUE` to `Renewable Percentage`
+    * `NAME_ENGL` to `Country`
+    * `nrg_bal` to `Energy Type`
+  * Maps Eurostat energy classifications into descriptive labels (e.g., `'Renewable energy - overall'` to `'Renewable Energy Total'`).
+  * Strips technical metadata columns (`DATAFLOW`, `OBS_FLAG`, `CONF_STATUS`, `unit`, etc.).
+  * Rounds renewable percentages to 1 decimal place.
+  * Appends ISO2 country codes (converting Greece `EL` to `GR` for emoji compatibility) and attaches national flag emojis via `add_country_flags()`.
+  * Deduplicates overlapping records between the historical and modern files (`keep='last'`).
+
+##### **`filter_data(merged)`**
+
+  Separates the preprocessed data into two specific visual targets:
+  1. **`df_renewable`**: Filters records exclusively to the official 27 EU member states (`AT`, `BE`, `BG`, `HR`, `CY`, `CZ`, `DK`, `EE`, `FI`, `FR`, `DE`, `EL`, `HU`, `IE`, `IT`, `LV`, `LT`, `LU`, `MT`, `NL`, `PL`, `PT`, `RO`, `SK`, `SI`, `ES`, `SE`) for `'Renewable Energy Total'`.
+  2. **`df_eu_total`**: Computes the benchmark annual European Union mean for each year from 2004 to 2024 via `.groupby('Year')['Renewable Percentage'].mean()`.
+
+---
+
+#### Active Datasets in Pipeline
+
+##### **`data/nrg_ind_ren_linear_old.csv`**:
+Eurostat historical baseline dataset covering years **2004–2022**. Contains sectoral breakdowns (`REN`, `REN_ELC`, `REN_HEAT_CL`, `REN_TRA`) and 2-letter country codes.
+
+##### **`data/nrg_ind_ren_linear.csv`**:
+Eurostat modern update covering years **2015–2024**. Provides the latest overall renewable share figures indexed by full country names.
+
+📌 _For further information see above section on datasets at the beginning of the document._
+
+---
 
 ### 4. Dashboard Components: `components/`
 

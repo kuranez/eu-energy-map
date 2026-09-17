@@ -405,120 +405,81 @@ In addition to the map and widgets, the `components/charts/` subpackage houses t
 
 ### V. Dashboard Layout: `layout/dashboard.py`
 
-The `layout/dashboard.py` module defines the visual hierarchy and structure of the dashboard. It brings together reactive chart components, interactive widgets, descriptive markdown, and image assets into a responsive, cohesive web layout wrapped in a Material-styled Panel template.
+The `layout/dashboard.py` module assembles all UI building blocks into one Panel `FastListTemplate`: the interactive map, tabbed analytical charts, markdown guidance, and static imagery.
 
 ---
 
 #### Imports & Dependencies
-* **`panel as pn`**: Provides structural layout containers (`pn.Row`, `pn.Column`, `pn.Tabs`), media panes (`pn.pane.Markdown`, `pn.pane.PNG`), and the top-level application template (`pn.template.FastListTemplate`).
-* **`panel.pane.Plotly`**: Specialized pane wrapper optimized for rendering responsive Plotly figures within Panel layouts.
-* **`config (LOGO_PATH, PICTURE_PATH)`**: Supplies absolute paths to static visual assets (header logo and description infographic).
+* **`panel as pn` + `panel.pane.Plotly`**: Provide the dashboard structure (`Row`, `Column`, `Tabs`) and Plotly pane wrappers.
+* **`config (LOGO_PATH, PICTURE_PATH)`**: Inject static media paths from centralized configuration.
 
 ---
 
 #### ⚙️ Method Documentation: `build_layout()`
 
-```python
-def build_layout(
-    interactive_map,
-    interactive_bar_year,
-    interactive_bar_country,
-    year_slider,
-    country_select
-) -> pn.template.FastListTemplate:
-```
-
 * **Description:**  
-  Constructs and returns the complete dashboard layout as a styled HoloViz Panel `FastListTemplate`.
-* **Parameters:**  
-  * `interactive_map`: Reactive function returning the European choropleth map figure.
-  * `interactive_bar_year`: Reactive function returning the annual member state comparison bar chart.
-  * `interactive_bar_country`: Reactive function returning the 20-year country trajectory chart.
-  * `year_slider` (*pn.widgets.IntSlider*): Interactive slider controlling the year filter.
-  * `country_select` (*pn.widgets.Select*): Dropdown selector controlling the country filter.
-* **Returns:**  
-  * `template` (*pn.template.FastListTemplate*): Ready-to-serve dashboard template.
+  Builds and returns the complete dashboard shell.
+* **Inputs:**  
+  * `interactive_map`: Reactive choropleth map object.
+  * `interactive_bar_year`: Reactive year-comparison bar chart object.
+  * `interactive_bar_country`: Reactive country time-series chart object.
+  * `year_slider`: Year filter widget.
+  * `country_select`: Country filter widget.
+* **Return value:**  
+  * A `pn.template.FastListTemplate` instance ready for serving.
 
 ---
 
-#### Step-by-Step Layout Assembly
+#### Layout Structure (Condensed)
 
-The layout is built progressively in six modular steps:
-
-```mermaid
-flowchart TD
-    A["1. Title Pane<br/><code>title_md</code>"]
-    B["2. Description Pane<br/><code>description_md</code>"]
-    C["3. Image Asset<br/><code>description_png</code>"]
-    B & C --> D["Side-by-side Info Box<br/><code>pn.Row(description_md, description_png)</code>"]
-
-    W1["year_slider"] & C1["interactive_bar_year"] --> T1["Tab 1: Year Filter"]
-    W2["country_select"] & C2["interactive_bar_country"] --> T2["Tab 2: Country Filter"]
-    T1 & T2 --> E["4. Filter & Chart Tabs<br/><code>pn.Tabs()</code>"]
-
-    MAP["interactive_map<br/>(Plotly Pane)"]
-    A & E & D --> RIGHT["Right Column<br/><code>pn.Column()</code>"]
-    MAP & RIGHT --> F["5. Main Grid Layout<br/><code>pn.Row(Left: Map, Right: Column)</code>"]
-    F --> G["6. Application Shell<br/><code>FastListTemplate(main=[layout])</code>"]
-```
-
-##### 1. Title Pane (`title_md`)
-Creates a prominent headline pane using `pn.pane.Markdown`:
-```python
-title_md = pn.pane.Markdown("# 🌱 Renewable Energy in the European Union: Explore developments across Europe")
-```
-
-##### 2. Description Pane (`description_md`)
-Renders project documentation, Eurostat data citation links, usage guidance, and the GitHub repository link. Includes scoped CSS rules to format typography:
-```html
-<style>
-.custom-desc { font-size: 16px; }
-.custom-desc h3 { font-size: 1.05em; }
-</style>
-```
-
-##### 3. Combining Text & Image (`description`)
-Pairs the descriptive markdown with the 250×250px renewable energy infographic (`assets/europe-renewables-500px.png`) horizontally in a `pn.Row`:
-```python
-description_png = pn.pane.PNG(str(PICTURE_PATH), width=250, height=250)
-description = pn.Row(description_md, description_png)
-```
-
-##### 4. Organization into Tabs (`tabs`)
-Organizes the analytical modes into a tabbed navigation interface (`pn.Tabs`), pairing each filter widget with its associated reactive chart:
-* **Tab 1 ("Year Filter"):** Bundles `year_slider` above `Plotly(interactive_bar_year)`.
-* **Tab 2 ("Country Filter"):** Bundles `country_select` above `Plotly(interactive_bar_country)`.
-
-##### 5. Final Two-Column Layout (`layout`)
-Arranges the dashboard into a side-by-side split screen using `pn.Row`:
-* **Left Column:** The interactive map pane (`Plotly(interactive_map)`), configured with `sizing_mode="stretch_height"` to maximize vertical screen space.
-* **Right Column:** A `pn.Column` containing the title pane, the tabbed chart controls, and the descriptive text/image box (`sizing_mode="stretch_both"`).
-
-##### 6. FastListTemplate Shell (`template`)
-Wraps the entire visual structure inside Panel’s responsive `FastListTemplate`:
-```python
-template = pn.template.FastListTemplate(
-    title="EU Energy Map",
-    logo=str(LOGO_PATH),
-    theme="default",
-    theme_toggle=False,
-    sidebar=[],
-    main=[layout]
-)
-```
-* **Header Branding:** Displays `"EU Energy Map"` and loads `logo-500px.png` in the navigation bar.
-* **Maximized Canvas:** Leaves `sidebar=[]` empty to allocate full screen width to the two-column main canvas.
+1. **Header content**: Creates title and description markdown panes.
+2. **Info block**: Combines description text with `PICTURE_PATH` image (`assets/europe-renewables-500px.png`) in a horizontal row.
+3. **Analysis area**: Creates two tabs:
+   * `"Year Filter"` (`year_slider` + annual ranking chart)
+   * `"Country Filter"` (`country_select` + country trend chart)
+4. **Main composition**: Renders a two-column view with the map on the left and all controls/content on the right, then wraps it in `FastListTemplate` with branding from `LOGO_PATH` (`assets/logo-500px.png`).
 
 ### 6. Utilities: `utils/`
 
-helpers
-- colors.py
-- flags.py
+The `utils/` package contains lightweight helpers used by visual and data-preparation modules.
+
+#### `utils/colors.py`
+
+Provides color-scale logic for map rendering:
+
+* Exposes a global Plotly Viridis palette (`get_colorscale()`), consumed by `components/map.py`.
+* Normalizes percentages to a stable `[0, 1]` domain (`normalize_value`) with clamping, which prevents out-of-range values from breaking visual mapping.
+* Samples colors by value (`get_viridis_color`) and supports both `hex` and `rgba` output formats.
+* Includes internal conversion helpers (`_tuple_to_hex`, `_hex_to_rgba`) to standardize color outputs for Plotly and UI styling.
+
+#### `utils/flags.py`
+
+Provides country-flag enrichment helpers:
+
+* `iso2_to_flag(iso2_code)` converts ISO 3166-1 alpha-2 codes (e.g., `DE`) into Unicode flag emojis.
+* `add_country_flags(data)` appends a `Flag` column based on `ISO2_Code`, enabling richer labels and hover content in map/chart views.
 
 ### 7. Assets: `assets/`
 
-contains images (note: remove/hide unused images, archive them)
+The `assets/` directory contains static image resources used by the dashboard UI.
+
+#### Current files
+* `logo-500px.png` — active header logo (`LOGO_PATH`) used by `FastListTemplate`.
+* `europe-renewables-500px.png` — active illustration (`PICTURE_PATH`) shown in the dashboard description panel.
+* `logo-alt-500px.png` — currently unused variant.
+* `logo-birne-500px.png` — currently unused variant.
+
+#### Maintenance note
+
+To keep the active asset set clear, unused variants should be hidden from primary docs/UI references and moved to an archive location (for example `assets/archive/`) when no longer needed for immediate design iteration.
 
 ### 8. Geodata: `geo/`
 
-contains geojson for europe
+The `geo/` directory stores geographic boundary data used for map rendering.
+
+#### `geo/europe.geojson`
+
+* Source of country polygon geometries used by the choropleth layer.
+* Loaded directly by `components/map.py` via `GEOJSON_PATH`.
+* Also referenced in data-loading and tests as the canonical geospatial boundary file.
+* Map linkage uses `featureidkey="properties.CNTR_ID"` and dataset country codes to bind tabular renewable metrics to GeoJSON features.

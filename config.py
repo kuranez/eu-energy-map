@@ -7,9 +7,6 @@ from pathlib import Path
 # Panel extension setup
 pn.extension('tabulator', 'plotly', design='material')
 
-# Mapbox token for Plotly maps
-MAPBOX_TOKEN = 'your_mapbox_token'
-
 # Base directory of the project
 BASE_DIR = Path(__file__).parent
 

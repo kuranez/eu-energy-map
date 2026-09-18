@@ -21,7 +21,14 @@
     </a>
 </p>
 
-An interactive dashboard that visualizes Eurostat data on renewable energy developments across European countries. Built with Python and Panel, the web app provides an intuitive interface to explore renewable energy trends from 2004 to 2024.
+## Project Summary
+
+The **EU Energy Map** transforms official Eurostat datasets into an interactive web dashboard for monitoring clean energy transitions across Europe (2004–2024).
+
+- **Geospatial Mapping:** Interactive choropleth maps powered by Plotly (MapLibre) and Eurostat GeoJSON boundaries.
+- **Comparative Benchmarking:** Real-time visual comparison of individual member states against EU27 aggregate averages.
+- **Data Harmonization:** Automated ETL pipeline standardizing historical (2004–2022) and modern (2015–2024) Eurostat energy metrics.
+- **Reactive UI:** Fast, reactive layout built with HoloViz Panel and Material Design components.
 
 ## 🌐 Web App
 
@@ -34,16 +41,6 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 > ![https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/app.png](https://raw.githubusercontent.com/kuranez/EU-Energy-Map/refs/heads/main/extra/images/screenshots/app.png)
 
 ---
-
-## ⚙️ Features
-
-- Interactive dashboard powered by **Panel** and **Plotly**
-
-- Time-series visualization of renewable energy shares by country and category
-
-- Geospatial mapping using **GeoJSON** and **GeoPandas**
-
-- Downloadable datasets and smooth filtering options
 
 
 ###  Example Charts
@@ -61,6 +58,10 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 ---
 ### Recent Changes
 ---
+
+**Latest Data**
+
+- **Updated to EuroStat data (2015–2024), while retaining historical data from 2004** for a broader perspective on renewable energy development in the European Union.
 
 **Bar Charts**
 - Unified display of **EU Total Average** across all charts, with a toggle option to show/hide it.
@@ -86,7 +87,7 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 ## 📦 Python Dependencies
 
-- **Core:** `os`, `json`
+- **Core:** `os`, `json`, `pathlib`, `typing`
 
 - **Data Handling:** `pandas`, `geopandas`
 
@@ -111,8 +112,19 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 - **Categories:** Total renewables, electricity, heating/cooling, transport
 
+### 2. Renewable Energy Data (Eurostat) - 2015–2024
 
-### 2. Geographic Boundaries (GISCO - Eurostat)
+- **File:** `nrg_ind_ren_linear.csv`
+
+- **Source:** [Eurostat – Renewable Energy](https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en)
+
+- **Years:** 2015–2024
+
+- **Columns:** Country names, energy type, unit, value (%), flags, confidentiality status
+
+- **Categories:** Total renewables
+
+### 3. Geographic Boundaries (GISCO - Eurostat)
 
 - **File:** `europe.geojson`
 
@@ -127,38 +139,50 @@ An interactive dashboard that visualizes Eurostat data on renewable energy devel
 
 ## 📁 File Structure
 
-```yaml
-EU-Energy-Map/
-├── app.py                   # Main dashboard entry point
-├── config.py                # Configurations (tokens, paths, etc)
+```txt
+eu-energy-map/
+|
+├── app.py                            # Main dashboard entry point
+├── config.py                         # Configurations (tokens, paths, etc)
+|
+├── docs/
+│   ├── documentation.md              # Project Documentation
+│   └── notebook.ipynb                # Interactive Notebook
+|
 ├── data/
-│   ├── loader.py            # Loads and merges CSV/GeoJSON data
-│   ├── filters.py           # Preprocessing and filtering logic
-│   └── nrg_ind_ren_linear.csv   # Eurostat renewable energy data
+│   ├── loader.py                     # Loads and merges CSV/GeoJSON data
+│   ├── filters.py                    # Preprocessing and filtering logic
+│   ├── nrg_ind_ren_linear_old.csv    # Eurostat renewable energy data
+│   └── nrg_ind_ren_linear.csv        
+|
 ├── components/
 │   ├── charts/
-│   │   ├── bar_chart_by_country.py  # Bar chart: Country vsU
-│   │   └── bar_chart_by_year.py     # Bar chart: All countries by year
-│   ├── map.py                # Interactive choropleth map
-│   └── widgets.py            # Dashboard widgets (sliders, selectors)
+│   │   ├── bar_chart_by_country.py   # Bar chart: Country vsU
+│   │   └── bar_chart_by_year.py      # Bar chart: All countries by year
+│   │
+│   ├── map.py                        # Interactive choropleth map
+│   └── widgets.py                    # Dashboard widgets (sliders, selectors)
+|
 ├── layout/
-│   └── dashboard.py          # Layout composition for Panel
-├── utils/                    # Helper functions
-│   ├── colors.py             # Color scales & conversion
-│   └── flags.py              # ISO2 code → emoji flag
+│   └── dashboard.py                  # Layout composition for Panel
+|
+├── utils/                            # Helper functions
+│   ├── colors.py                     # Color scales & conversion
+│   └── flags.py                      # ISO2 code → emoji flag
+|
 ├── assets/
-│   ├── europe-renewables-500px.png  # Dashboard image
-│   └─── logo-500px.png               # Logo
+│   ├── europe-renewables-500px.png   # Dashboard image
+│   └── logo-500px.png                # Logo
+|
 └── geo/
-    └── europe.geojson        # European country boundaries (GeoJSON)
+    └── europe.geojson                # European country boundaries (GeoJSON)
 ```
 
 ---
 
 ## 📙 Documentation
 
-**Code documentation is provided as a Jupyter notebook.**  
-You can view it here: [documentation.ipynb](documentation.ipynb)
+Documentation is provided in `docs/` folder: [View documentation](docs/documentation.md)
 
 
 ## 📕 Resources
@@ -175,6 +199,7 @@ This project is open source and available under the **MIT License**.
 You may modify, distribute, and use it freely in your own projects.
 
 ---
+
 
 ## 📓 Jupyter Notebook Version (Previous Release)
 

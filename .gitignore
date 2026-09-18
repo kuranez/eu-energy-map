@@ -6,3 +6,9 @@ utils/__pycache__
 layout/__pycache__
 .gitignore
 .vscode
+data/nrg_ind_rfce_linear_old.csv
+data/nrg_ind_rfce_linear.csv
+assets/logo-alt-500px.png
+assets/logo-birne-500px.png
+test
+data/datasets_list.txt

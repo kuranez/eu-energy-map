@@ -182,7 +182,7 @@ eu-energy-map/
 
 ## 📙 Documentation
 
-Documentation is provided in `docs/` folder: [View documentation](docs/documentation.md)
+Documentation is provided in `./docs/` folder: [View documentation!](docs/documentation.md)
 
 ---
 

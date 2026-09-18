@@ -21,7 +21,7 @@
     </a>
 </p>
 
-## 📌 Summary
+## Project Summary
 
 The **EU Energy Map** transforms official Eurostat datasets into an interactive web dashboard for monitoring clean energy transitions across Europe (2004–2024).
 

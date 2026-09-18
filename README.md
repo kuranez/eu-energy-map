@@ -21,7 +21,7 @@
     </a>
 </p>
 
-## 📌 Summary
+## Project Summary
 
 The **EU Energy Map** transforms official Eurostat datasets into an interactive web dashboard for monitoring clean energy transitions across Europe (2004–2024).
 
@@ -59,6 +59,10 @@ The **EU Energy Map** transforms official Eurostat datasets into an interactive 
 ### Recent Changes
 ---
 
+**Latest Data**
+
+- **Updated to EuroStat data (2015–2024), while retaining historical data from 2004** for a broader perspective on renewable energy development in the European Union.
+
 **Bar Charts**
 - Unified display of **EU Total Average** across all charts, with a toggle option to show/hide it.
 - Minor improvements to hover templates and trace labels.
@@ -83,7 +87,7 @@ The **EU Energy Map** transforms official Eurostat datasets into an interactive 
 
 ## 📦 Python Dependencies
 
-- **Core:** `os`, `json`
+- **Core:** `os`, `json`, `pathlib`, `typing`
 
 - **Data Handling:** `pandas`, `geopandas`
 
@@ -135,38 +139,50 @@ The **EU Energy Map** transforms official Eurostat datasets into an interactive 
 
 ## 📁 File Structure
 
-```yaml
-EU-Energy-Map/
-├── app.py                   # Main dashboard entry point
-├── config.py                # Configurations (tokens, paths, etc)
+```txt
+eu-energy-map/
+|
+├── app.py                            # Main dashboard entry point
+├── config.py                         # Configurations (tokens, paths, etc)
+|
+├── docs/
+│   ├── documentation.md              # Project Documentation
+│   └── notebook.ipynb                # Interactive Notebook
+|
 ├── data/
-│   ├── loader.py            # Loads and merges CSV/GeoJSON data
-│   ├── filters.py           # Preprocessing and filtering logic
-│   └── nrg_ind_ren_linear.csv   # Eurostat renewable energy data
+│   ├── loader.py                     # Loads and merges CSV/GeoJSON data
+│   ├── filters.py                    # Preprocessing and filtering logic
+│   ├── nrg_ind_ren_linear_old.csv    # Eurostat renewable energy data
+│   └── nrg_ind_ren_linear.csv        
+|
 ├── components/
 │   ├── charts/
-│   │   ├── bar_chart_by_country.py  # Bar chart: Country vsU
-│   │   └── bar_chart_by_year.py     # Bar chart: All countries by year
-│   ├── map.py                # Interactive choropleth map
-│   └── widgets.py            # Dashboard widgets (sliders, selectors)
+│   │   ├── bar_chart_by_country.py   # Bar chart: Country vsU
+│   │   └── bar_chart_by_year.py      # Bar chart: All countries by year
+│   │
+│   ├── map.py                        # Interactive choropleth map
+│   └── widgets.py                    # Dashboard widgets (sliders, selectors)
+|
 ├── layout/
-│   └── dashboard.py          # Layout composition for Panel
-├── utils/                    # Helper functions
-│   ├── colors.py             # Color scales & conversion
-│   └── flags.py              # ISO2 code → emoji flag
+│   └── dashboard.py                  # Layout composition for Panel
+|
+├── utils/                            # Helper functions
+│   ├── colors.py                     # Color scales & conversion
+│   └── flags.py                      # ISO2 code → emoji flag
+|
 ├── assets/
-│   ├── europe-renewables-500px.png  # Dashboard image
-│   └─── logo-500px.png               # Logo
+│   ├── europe-renewables-500px.png   # Dashboard image
+│   └── logo-500px.png                # Logo
+|
 └── geo/
-    └── europe.geojson        # European country boundaries (GeoJSON)
+    └── europe.geojson                # European country boundaries (GeoJSON)
 ```
 
 ---
 
 ## 📙 Documentation
 
-**Code documentation is provided as a Jupyter notebook.**  
-You can view it here: [documentation.ipynb](documentation.ipynb)
+Documentation is provided in `docs/` folder: [View documentation](docs/documentation.md)
 
 
 ## 📕 Resources
@@ -181,6 +197,19 @@ You can view it here: [documentation.ipynb](documentation.ipynb)
 
 This project is open source and available under the **MIT License**.
 You may modify, distribute, and use it freely in your own projects.
+
+---
+
+
+## 📓 Jupyter Notebook Version (Previous Release)
+
+A standalone Jupyter Notebook version of the EU Energy Map dashboard is available from a previous release:
+
+> [**Download Notebook Release v1.1**](https://github.com/kuranez/eu-energy-map/releases/tag/nb-1.1)
+
+- Run the notebook locally to explore and visualize Eurostat renewable energy data without setting up the full web app.
+- Includes interactive charts and geospatial mapping using the same datasets.
+- Ideal for experimentation, prototyping, or educational use.
 
 
 ---

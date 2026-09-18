@@ -12,7 +12,7 @@ Built with **Python**, **HoloViz Panel**, and **Plotly**, the application integr
 
 ## 📦 Python Dependencies
 
-- **Core:** `os`, `json`
+- **Core:** `os`, `json`, `pathlib`, `typing`
 - **Data Handling:** `pandas`, `geopandas`
 - **Visualization:** `plotly.express`, `plotly.graph_objects`, `plotly.io`
 - **Dashboard UI:** `panel`
@@ -68,6 +68,7 @@ eu-energy-map/
 │   ├── charts/
 │   │   ├── bar_chart_by_country.py   # Bar chart: Country vsU
 │   │   └── bar_chart_by_year.py      # Bar chart: All countries by year
+│   │
 │   ├── map.py                        # Interactive choropleth map
 │   └── widgets.py                    # Dashboard widgets (sliders, selectors)
 |
@@ -80,7 +81,7 @@ eu-energy-map/
 |
 ├── assets/
 │   ├── europe-renewables-500px.png   # Dashboard image
-│   └── logo-500px.png               # Logo
+│   └── logo-500px.png                # Logo
 |
 └── geo/
     └── europe.geojson                # European country boundaries (GeoJSON)
@@ -96,7 +97,7 @@ eu-energy-map/
 
 ---
 
-#### Imports & Packages
+#### 📦 Imports & Packages
 
 The script organizes dependencies into standard library utilities, third-party frameworks, and local modular components:
 
@@ -229,7 +230,7 @@ The pipeline is split into two specialized modules:
 
 ---
 
-#### Imports & Dependencies
+#### 📦 Imports & Dependencies
 
 ##### 👉 **`data/loader.py`**
 * **`os`**: Performs filesystem verification (`os.path.exists`, `os.PathLike`) to validate that dataset CSVs and GeoJSON files exist before attempting to parse them.
@@ -323,7 +324,6 @@ Eurostat modern update covering years **2015–2024**. Provides the latest overa
 
 ---
 
-
 ### IV. Dashboard Components: `components/`
 
 The `components/` directory encapsulates all visual presentation elements and user input controls. By isolating UI widgets, geospatial mapping, and charts from the main layout and data pipeline, each component remains modular, reusable, and easily testable.
@@ -334,7 +334,7 @@ The `components/` directory encapsulates all visual presentation elements and us
 
 This module constructs the interactive European choropleth map that visually displays renewable energy adoption by country for any selected year.
 
-##### Imports & Dependencies
+##### 📦 Imports & Dependencies
 * **`plotly.graph_objects as go`**: Generates the high-level `Figure` container and the underlying tile-based `Choroplethmap` trace.
 * **`json`**: Loads and parses the European boundary polygons from `geo/europe.geojson` into a Python dictionary.
 * **`pathlib.Path`**: Computes the absolute path to the GeoJSON file relative to `__file__`.
@@ -368,10 +368,10 @@ def create_choropleth_map(df_year: pd.DataFrame) -> go.Figure:
 
 This module encapsulates the creation of interactive filter controls that allow users to drive dashboard updates.
 
-##### Imports & Dependencies
+##### 📦 Imports & Dependencies
 * **`panel as pn`**: Supplies the reactive UI widget primitives (`IntSlider`, `Select`).
 
-##### ⚙️ Method Documentation
+##### ⚙️ Method Documentation: `create_widgets(...)`
 
 ```python
 def create_widgets(df_renewable: pd.DataFrame) -> tuple[pn.widgets.IntSlider, pn.widgets.Select]:
@@ -392,7 +392,7 @@ def create_widgets(df_renewable: pd.DataFrame) -> tuple[pn.widgets.IntSlider, pn
 
 ---
 
-#### 3. Chart Visualizations: `components/charts/`
+#### 3. 📊 Chart Visualizations: `components/charts/`
 
 In addition to the map and widgets, the `components/charts/` subpackage houses the secondary analytical figures:
 
@@ -409,13 +409,13 @@ The `layout/dashboard.py` module assembles all UI building blocks into one Panel
 
 ---
 
-#### Imports & Dependencies
+#### 📦 Imports & Dependencies
 * **`panel as pn` + `panel.pane.Plotly`**: Provide the dashboard structure (`Row`, `Column`, `Tabs`) and Plotly pane wrappers.
 * **`config (LOGO_PATH, PICTURE_PATH)`**: Inject static media paths from centralized configuration.
 
 ---
 
-#### ⚙️ Method Documentation: `build_layout()`
+#### ⚙️ Method Documentation: `build_layout(...)`
 
 * **Description:**  
   Builds and returns the complete dashboard shell.
@@ -430,7 +430,7 @@ The `layout/dashboard.py` module assembles all UI building blocks into one Panel
 
 ---
 
-#### Layout Structure (Condensed)
+#### Layout Structure
 
 1. **Header content**: Creates title and description markdown panes.
 2. **Info block**: Combines description text with `PICTURE_PATH` image (`assets/europe-renewables-500px.png`) in a horizontal row.
@@ -439,11 +439,15 @@ The `layout/dashboard.py` module assembles all UI building blocks into one Panel
    * `"Country Filter"` (`country_select` + country trend chart)
 4. **Main composition**: Renders a two-column view with the map on the left and all controls/content on the right, then wraps it in `FastListTemplate` with branding from `LOGO_PATH` (`assets/logo-500px.png`).
 
-### 6. Utilities: `utils/`
+---
+
+### VI. Utilities: `utils/`
 
 The `utils/` package contains lightweight helpers used by visual and data-preparation modules.
 
-#### `utils/colors.py`
+---
+
+#### 👉 **`utils/colors.py`**
 
 Provides color-scale logic for map rendering:
 
@@ -452,34 +456,69 @@ Provides color-scale logic for map rendering:
 * Samples colors by value (`get_viridis_color`) and supports both `hex` and `rgba` output formats.
 * Includes internal conversion helpers (`_tuple_to_hex`, `_hex_to_rgba`) to standardize color outputs for Plotly and UI styling.
 
-#### `utils/flags.py`
+---
+
+#### 👉 **`utils/flags.py`**
 
 Provides country-flag enrichment helpers:
 
 * `iso2_to_flag(iso2_code)` converts ISO 3166-1 alpha-2 codes (e.g., `DE`) into Unicode flag emojis.
 * `add_country_flags(data)` appends a `Flag` column based on `ISO2_Code`, enabling richer labels and hover content in map/chart views.
 
-### 7. Assets: `assets/`
+---
+
+### VII. Assets: `assets/`
 
 The `assets/` directory contains static image resources used by the dashboard UI.
 
-#### Current files
+---
+
+#### 📂 Files
 * `logo-500px.png` — active header logo (`LOGO_PATH`) used by `FastListTemplate`.
 * `europe-renewables-500px.png` — active illustration (`PICTURE_PATH`) shown in the dashboard description panel.
-* `logo-alt-500px.png` — currently unused variant.
-* `logo-birne-500px.png` — currently unused variant.
 
-#### Maintenance note
+---
 
-To keep the active asset set clear, unused variants should be hidden from primary docs/UI references and moved to an archive location (for example `assets/archive/`) when no longer needed for immediate design iteration.
-
-### 8. Geodata: `geo/`
+### VIII. Geodata: `geo/`
 
 The `geo/` directory stores geographic boundary data used for map rendering.
 
-#### `geo/europe.geojson`
+---
+
+#### 🌍 **`geo/europe.geojson`**
 
 * Source of country polygon geometries used by the choropleth layer.
 * Loaded directly by `components/map.py` via `GEOJSON_PATH`.
 * Also referenced in data-loading and tests as the canonical geospatial boundary file.
 * Map linkage uses `featureidkey="properties.CNTR_ID"` and dataset country codes to bind tabular renewable metrics to GeoJSON features.
+
+
+---
+
+## Links & Author
+
+> - **Project on GitHub:** [EU-Energy-Map](https://github.com/kuranez/eu-energy-map)
+>
+> - **WebApp:** [View interactive map](https://apps.kuracodez.space/eu-energy-map/app)
+>
+> - **Author:** [Franz M. / kuranez](https://github.com/kuranez)
+>
+> - **Documentation:** [18/09/2026]
+
+
+### Resources
+
+> - [Holoviz Panel](https://panel.holoviz.org/) – A powerful Python framework for creating interactive web apps and dashboards, used for the UI in this project.
+>
+> - [Pandas](https://pandas.pydata.org/) – Essential for data manipulation and analysis, enabling efficient handling of Eurostat datasets.
+>
+> - [Geopandas](https://geopandas.org/) – Extends pandas to support geospatial data, making it easy to work with geographic boundaries and mapping.
+>
+> - [Jupyter](https://jupyter.org/) - An interactive environment for running Python code in notebooks, ideal for experimentation, documentation, and prototyping scripts.
+>
+> - [Docker Documentation](https://docs.docker.com/) -  Official guides for containerizing, deploying, and running this app consistently across different environments.
+
+### License
+
+This project is open source and available under the **MIT License**.
+You may modify, distribute, and use it freely in your own projects.

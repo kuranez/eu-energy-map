@@ -37,7 +37,7 @@ def build_layout(interactive_map, interactive_bar_year, interactive_bar_country,
         ### 📑 Description
         This dashboard visualizes renewable energy data trends in the European Union, 
         allowing users to filter by year and country. Data is sourced from 
-        [Eurostat](https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en&category=nrg.nrg_quant.nrg_quanta.nrg_ind_share).
+        [Eurostat](https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/map?lang=en).
         
         ### ❓ How to Use
         Use the tabs to explore different aspects of the data.

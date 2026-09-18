@@ -8,8 +8,6 @@ import plotly.graph_objects as go
 import json
 # Path handling for loading bundled data files
 from pathlib import Path
-# Mapbox token for accessing Mapbox styles
-from config import MAPBOX_TOKEN
 # Custom utility functions for color scale normalization
 from utils.colors import get_colorscale
 

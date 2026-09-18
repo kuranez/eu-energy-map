@@ -102,7 +102,7 @@ The **EU Energy Map** transforms official Eurostat datasets into an interactive 
 
 ### 1. Renewable Energy Data (Eurostat)
 
-- **File:** `nrg_ind_ren_linear.csv`
+- **File:** `nrg_ind_ren_linear_old.csv`
 
 - **Source:** [Eurostat – Renewable Energy](https://ec.europa.eu/eurostat/databrowser/view/nrg_ind_ren/default/table?lang=en)
 

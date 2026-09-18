@@ -14,6 +14,7 @@ import geopandas as gpd
 
 # Custom utility function to convert ISO2 country code to flag emoji
 from utils.flags import iso2_to_flag
+from utils.helpers import load_csv_data
 
 
 def _normalize_frame_columns(frame: pd.DataFrame) -> pd.DataFrame:
@@ -70,7 +71,8 @@ def load_data(
     data_frames = []
 
     for path in data_paths:
-        frame = pd.read_csv(path)
+        frame = load_csv_data(path)
+        # frame = pd.read_csv(path)
         frame = _normalize_frame_columns(frame)
 
         country_mapping = {}

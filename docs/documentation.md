@@ -41,6 +41,7 @@ Built with **Python**, **HoloViz Panel**, and **Plotly**, the application integr
 			- [**Key Configurations**](#key-configurations)
 				- [1. Panel Extension Setup (`pn.extension`)](#1-panel-extension-setup-pnextension)
 				- [2. Dynamic Filesystem Path Resolution (`pathlib.Path`)](#2-dynamic-filesystem-path-resolution-pathlibpath)
+				- [3. Centralized Data Mappings & Constants](#3-centralized-data-mappings--constants)
 			- [**Module Usage Overview**](#module-usage-overview)
 		- [**III. Data Loading & Filtering Pipeline: `data/`**](#iii-data-loading-filtering-pipeline-data)
 			- [**📦 Imports & Dependencies**](#-imports-dependencies)
@@ -48,7 +49,6 @@ Built with **Python**, **HoloViz Panel**, and **Plotly**, the application integr
 				- [👉 Module: `data/filters.py`](#-module-datafilterspy)
 			- [**🔁 Data Pipeline Workflow**](#-data-pipeline-workflow)
 				- [**1. Ingestion & Reconciliation: `loader.py`**](#1-ingestion-reconciliation-loaderpy)
-					- [⚙️ Method documentation: `_normalize_frame_columns(frame)`](#-method-documentation-normalizeframecolumnsframe)
 					- [⚙️ Method documentation: `load_data(...)`](#-method-documentation-loaddata)
 				- [**2. Preprocessing & Aggregation: `filters.py`**](#2-preprocessing-aggregation-filterspy)
 					- [⚙️ Method documentation: `preprocess(data, europe)`](#-method-documentation-preprocessdata-europe)
@@ -70,6 +70,8 @@ Built with **Python**, **HoloViz Panel**, and **Plotly**, the application integr
 			- [⚙️ Method Documentation: `build_layout(...)`](#-method-documentation-buildlayout)
 			- [📊 Layout Structure](#-layout-structure)
 		- [**VI. Utilities: `utils/`**](#vi-utilities-utils)
+			- [👉 Module: `utils/helpers.py`](#-module-utilshelperspy)
+			- [👉 Module: `utils/mapping.py`](#-module-utilsmappingpy)
 			- [👉 Module: `utils/colors.py`](#-module-utilscolorspy)
 			- [👉 Module: `utils/flags.py`](#-module-utilsflagspy)
 		- [**VII. Assets: `assets/`**](#vii-assets-assets)
@@ -86,7 +88,7 @@ Built with **Python**, **HoloViz Panel**, and **Plotly**, the application integr
 
 ## **📦 Python Dependencies**
 
-- **Core:** `os`, `json`, `pathlib`, `typing`
+- **Core:** `os`, `json`, `pathlib`, `typing`, `glob`
 - **Data Handling:** `pandas`, `geopandas`
 - **Visualization:** `plotly.express`, `plotly.graph_objects`, `plotly.io`
 - **Dashboard UI:** `panel`
@@ -126,32 +128,34 @@ Built with **Python**, **HoloViz Panel**, and **Plotly**, the application integr
 eu-energy-map/
 |
 ├── app.py                            # Main dashboard entry point
-├── config.py                         # Configurations (tokens, paths, etc)
+├── config.py                         # Configurations & centralized mappings
 |
 ├── docs/
 │   ├── documentation.md              # Project Documentation
 │   └── notebook.ipynb                # Interactive Notebook
 |
 ├── data/
-│   ├── loader.py                     # Loads and merges CSV/GeoJSON data
-│   ├── filters.py                    # Preprocessing and filtering logic
-│   ├── nrg_ind_ren_linear_old.csv    # Eurostat renewable energy data
-│   └── nrg_ind_ren_linear.csv        
+│   ├── loader.py                     # Coordinates data loading pipeline
+│   ├── filters.py                    # Coordinates preprocessing and filtering pipeline
+│   ├── nrg_ind_ren_linear_old.csv    # Eurostat renewable energy data (2004–2022)
+│   └── nrg_ind_ren_linear.csv        # Eurostat renewable energy data (2015–2024)
 |
 ├── components/
 │   ├── charts/
-│   │   ├── bar_chart_by_country.py   # Bar chart: Country vsU
+│   │   ├── bar_chart_by_country.py   # Bar chart: Country vs EU benchmark
 │   │   └── bar_chart_by_year.py      # Bar chart: All countries by year
 │   │
-│   ├── map.py                        # Interactive choropleth map
+│   ├── map.py                        # Interactive choropleth map (Plotly 6 MapLibre)
 │   └── widgets.py                    # Dashboard widgets (sliders, selectors)
 |
 ├── layout/
 │   └── dashboard.py                  # Layout composition for Panel
 |
-├── utils/                            # Helper functions
+├── utils/                            # Helper functions & mappings
+│   ├── helpers.py                    # Centralized Pandas/GeoPandas helpers & flag utilities
+│   ├── mapping.py                    # Mapping getter and applier utilities
 │   ├── colors.py                     # Color scales & conversion
-│   └── flags.py                      # ISO2 code → emoji flag
+│   └── flags.py                      # Backward-compatibility re-export module
 |
 ├── assets/
 │   ├── europe-renewables-500px.png   # Dashboard image
@@ -176,22 +180,22 @@ eu-energy-map/
 The script organizes dependencies into standard library utilities, third-party frameworks, and local modular components:
 
 ##### Standard Library
-  * **`pathlib.Path`**: Provides cross-platform, OS-independent path resolution relative to `__file__`. Ensures datasets and GeoJSON files are resolved reliably regardless of the working directory from which `panel serve` is executed.
-  * **`typing.cast`**: Provides static type hinting, explicitly asserting that raw objects returned from data loading conform to `pd.DataFrame` and `gpd.GeoDataFrame` for code clarity and linter validation.
+* **`pathlib.Path`**: Provides cross-platform, OS-independent path resolution relative to `__file__`. Ensures datasets and GeoJSON files are resolved reliably regardless of the working directory from which `panel serve` is executed.
+* **`typing.cast`**: Provides static type hinting, explicitly asserting that raw objects returned from data loading conform to `pd.DataFrame` and `gpd.GeoDataFrame` for code clarity and linter validation.
 
 ##### Third-Party Frameworks
-  * **`panel (pn)`**: The core reactive dashboard framework. Manages the Bokeh server lifecycle, JavaScript/CSS extension loading, interactive widget synchronization, reactive function decorators (`@pn.depends`), and the template layout.
-  * **`pandas (pd)`**: The primary data manipulation engine used for filtering, slicing, aggregating, and passing structured tabular data to charts.
-  * **`geopandas (gpd)`**: Extends Pandas with geospatial capabilities, managing European country geographic boundaries and geometry attributes as a `GeoDataFrame`.
+* **`panel (pn)`**: The core reactive dashboard framework. Manages the Bokeh server lifecycle, JavaScript/CSS extension loading, interactive widget synchronization, reactive function decorators (`@pn.depends`), and the template layout.
+* **`pandas (pd)`**: The primary data manipulation engine used for filtering, slicing, aggregating, and passing structured tabular data to charts.
+* **`geopandas (gpd)`**: Extends Pandas with geospatial capabilities, managing European country geographic boundaries and geometry attributes as a `GeoDataFrame`.
 
 ##### Application Modules
-  * **`data.loader (load_data)`**: Loads raw CSV files and GeoJSON into DataFrames.
-  * **`data.filters (preprocess, filter_data)`**: Merges energy metrics with country boundaries, cleans columns, normalizes country codes, filters for EU member states, and calculates EU-wide aggregate averages.
-  * **`components.widgets (create_widgets)`**: Factory function creating the interactive UI controllers (the Year slider and Country selector).
-  * **`components.map (create_choropleth_map)`**: Generates the interactive Plotly MapLibre choropleth map.
-  * **`components.charts.bar_chart_by_year (create_bar_chart_year)`**: Builds the ranked bar chart for all EU nations in a given year.
-  * **`components.charts.bar_chart_by_country (create_bar_chart_country)`**: Generates the 2004–2024 time-series comparison chart for a selected country.
-  * **`layout.dashboard (build_layout)`**: Assembles charts, widgets, description panes, and branding assets into a structured Panel template.
+* **`data.loader (load_data)`**: Loads raw CSV files and GeoJSON into DataFrames.
+* **`data.filters (preprocess, filter_data)`**: Merges energy metrics with country boundaries, cleans columns, normalizes country codes, filters for EU member states, and calculates EU-wide aggregate averages.
+* **`components.widgets (create_widgets)`**: Factory function creating the interactive UI controllers (the Year slider and Country selector).
+* **`components.map (create_choropleth_map)`**: Generates the interactive Plotly MapLibre choropleth map.
+* **`components.charts.bar_chart_by_year (create_bar_chart_year)`**: Builds the ranked bar chart for all EU nations in a given year.
+* **`components.charts.bar_chart_by_country (create_bar_chart_country)`**: Generates the 2004–2024 time-series comparison chart for a selected country.
+* **`layout.dashboard (build_layout)`**: Assembles charts, widgets, description panes, and branding assets into a structured Panel template.
 
 ---
 
@@ -209,36 +213,32 @@ flowchart TD
 ```
 
 ##### 1. Panel Initialization (`pn.extension`)
-   Registers required JavaScript dependencies (`'tabulator'`, `'plotly'`), activates the Material Design UI theme, and sets responsive sizing behavior (`sizing_mode='stretch_width'`).
+Registers required JavaScript dependencies (`'tabulator'`, `'plotly'`), activates the Material Design UI theme, and sets responsive sizing behavior (`sizing_mode='stretch_width'`).
 
 ##### 2. Loading & Preprocessing Data Pipeline
-   * Computes absolute paths for both historical (`nrg_ind_ren_linear_old.csv`) and modern (`nrg_ind_ren_linear.csv`) datasets alongside `europe.geojson`.
-   * Loads raw inputs via `load_data(..., return_raw=True)`.
-   * Merges tabular data with geographic polygons using `preprocess()`.
-   * Validates DataFrame types and extracts clean subsets via `filter_data()`:
-     * `df_renewable`: Individual country metrics filtered to EU member states.
-     * `df_eu_total`: Mean annual renewable share across all EU nations.
+* Computes absolute paths for both historical (`nrg_ind_ren_linear_old.csv`) and modern (`nrg_ind_ren_linear.csv`) datasets alongside `europe.geojson`.
+* Loads raw inputs via `load_data(..., return_raw=True)`.
+* Merges tabular data with geographic polygons using `preprocess()`.
+* Validates DataFrame types and extracts clean subsets via `filter_data()`:
+  * `df_renewable`: Individual country metrics filtered to EU member states.
+  * `df_eu_total`: Mean annual renewable share across all EU nations.
 
 ##### 3. Widget Creation
-
-   Calls `create_widgets(df_renewable)` to generate interactive Panel widgets populated with actual data boundaries:
-   * **`year_slider`**: An `IntSlider` spanning years 2004–2024 (defaulting to 2024).
-   * **`country_select`**: A `Select` dropdown populated with unique, sorted EU country names (defaulting to Germany).
+Calls `create_widgets(df_renewable)` to generate interactive Panel widgets populated with actual data boundaries:
+* **`year_slider`**: An `IntSlider` spanning years 2004–2024 (defaulting to 2024).
+* **`country_select`**: A `Select` dropdown populated with unique, sorted EU country names (defaulting to Germany).
 
 ##### 4. Reactive Bindings (`@pn.depends`)
-
-   Establishes dynamic event listeners linking widget values to visualization update functions:
-   * **`map_view(year)`**: Listens to `year_slider.param.value`, slices `df_renewable` by year, and re-renders the choropleth map.
-   * **`bar_by_year(year)`**: Listens to `year_slider.param.value`, slices by year, and re-renders the annual member state comparison bar chart.
-   * **`bar_by_country(country)`**: Listens to `country_select.param.value`, filters data for that country, and re-renders the 20-year trajectory comparison chart.
+Establishes dynamic event listeners linking widget values to visualization update functions:
+* **`map_view(year)`**: Listens to `year_slider.param.value`, slices `df_renewable` by year, and re-renders the choropleth map.
+* **`bar_by_year(year)`**: Listens to `year_slider.param.value`, slices by year, and re-renders the annual member state comparison bar chart.
+* **`bar_by_country(country)`**: Listens to `country_select.param.value`, filters data for that country, and re-renders the 20-year trajectory comparison chart.
 
 ##### 5. Layout Creation
-
-   Passes the reactive functions and widgets into `build_layout()`, constructing a responsive side-by-side dashboard structure inside a `FastListTemplate` with navigation tabs, descriptive markdown, and image assets.
+Passes the reactive functions and widgets into `build_layout()`, constructing a responsive side-by-side dashboard structure inside a `FastListTemplate` with navigation tabs, descriptive markdown, and image assets.
 
 ##### 6. Serving the Application (`.servable()`)
-
-   Attaches the completed template to Bokeh's server document context via `template.servable()`.
+Attaches the completed template to Bokeh's server document context via `template.servable()`.
 
 ---
 
@@ -258,7 +258,7 @@ panel serve app.py --show --autoreload
 
 ### **II. Configuration: `config.py`**
 
-The `config.py` module serves as the central configuration hub for the application. It establishes global UI extension settings, manages external API credentials, and dynamically resolves absolute paths to static visual assets. Centralizing these parameters ensures that filepaths and configurations are not hardcoded across multiple components.
+The `config.py` module serves as the single source of truth for application settings, UI extension parameters, API credentials, filepaths, and data transformation dictionaries. Centralizing these parameters ensures that all data mappings, column names, and droplists are defined in one place.
 
 ---
 
@@ -274,20 +274,34 @@ pn.extension('tabulator', 'plotly', design='material')
 * **`design='material'`**: Enforces Google Material Design styling across all dashboard widgets, inputs, and template containers for a cohesive look.
 
 ##### 2. Dynamic Filesystem Path Resolution (`pathlib.Path`)
-Uses Python's `pathlib` to anchor asset paths relative to `config.py` itself, ensuring static assets load reliably across operating systems and deployment environments (local development, Docker containers, or remote servers):
-
+Uses Python's `pathlib` to anchor asset paths relative to `config.py` itself, ensuring static assets load reliably across operating systems and deployment environments:
 * **`BASE_DIR`**: Resolves the root directory of the repository (`Path(__file__).parent`).
 * **`ASSETS_DIR`**: Points to the visual media folder (`assets/`).
 * **`LOGO_PATH`**: Path to `assets/logo-500px.png`, used as the header emblem in the dashboard template.
 * **`PICTURE_PATH`**: Path to `assets/europe-renewables-500px.png`, displayed as the featured graphic alongside the dashboard description.
 
+##### 3. Centralized Data Mappings & Constants
+* **`COLUMN_MAPPING`**: Standardizes Eurostat columns (`nrg_bal` $\rightarrow$ `Energy Type`, `TIME_PERIOD` $\rightarrow$ `Year`, `OBS_VALUE` $\rightarrow$ `Renewable Percentage`, `NAME_ENGL` $\rightarrow$ `Country`).
+* **`COLUMNS_TO_DROP`**: Defines technical metadata columns to be stripped from final DataFrames (`DATAFLOW`, `LAST UPDATE`, `freq`, `unit`, `OBS_FLAG`, `CONF_STATUS`, `geo`, `geo_key`).
+* **`ENERGY_TYPE_MAPPING`**: Maps raw Eurostat energy balance codes to human-readable titles (e.g. `'Renewable energy - overall'` $\rightarrow$ `'Renewable Energy Total'`).
+* **`COUNTRY_CODE_MAPPING`**: Re-maps country codes for flag compatibility (e.g. `'EL'` $\rightarrow$ `'GR'`).
+* **`EU_COUNTRIES`**: Official set containing the 27 EU member state country codes.
+* **`NORMALIZE_ENERGY_MAPPING`**: Normalizes legacy balance codes across multi-version Eurostat exports.
+* **`FINAL_COLUMNS`**: Specifies the canonical schema and column order for processed DataFrames.
+* **`MAPBOX_TOKEN`**: Holds authentication token if proprietary Mapbox basemap styles are used.
+
 ---
 
 #### **Module Usage Overview**
 
-| Variable / Function | Consumer File | Purpose |
+| Variable / Constant | Consumer Modules | Purpose |
 | :--- | :--- | :--- |
 | **`pn.extension(...)`** | Global runtime | Pre-registers client-side dependencies before UI rendering |
+| **`COLUMN_MAPPING`** | [utils/helpers.py](file:///home/kuranez/Projects_new/python/eu-energy-map/utils/helpers.py), [utils/mapping.py](file:///home/kuranez/Projects_new/python/eu-energy-map/utils/mapping.py) | Standardizes technical column names |
+| **`COLUMNS_TO_DROP`** | [utils/helpers.py](file:///home/kuranez/Projects_new/python/eu-energy-map/utils/helpers.py), [utils/mapping.py](file:///home/kuranez/Projects_new/python/eu-energy-map/utils/mapping.py) | Defines metadata columns to drop |
+| **`ENERGY_TYPE_MAPPING`**| [utils/helpers.py](file:///home/kuranez/Projects_new/python/eu-energy-map/utils/helpers.py), [utils/mapping.py](file:///home/kuranez/Projects_new/python/eu-energy-map/utils/mapping.py) | Maps energy category codes to descriptive names |
+| **`COUNTRY_CODE_MAPPING`**| [utils/helpers.py](file:///home/kuranez/Projects_new/python/eu-energy-map/utils/helpers.py), [utils/mapping.py](file:///home/kuranez/Projects_new/python/eu-energy-map/utils/mapping.py) | Converts EL to GR for flag emoji rendering |
+| **`EU_COUNTRIES`** | [utils/helpers.py](file:///home/kuranez/Projects_new/python/eu-energy-map/utils/helpers.py), [utils/mapping.py](file:///home/kuranez/Projects_new/python/eu-energy-map/utils/mapping.py) | Filters data exclusively for EU27 member states |
 | **`LOGO_PATH`** | [layout/dashboard.py](file:///home/kuranez/Projects_new/python/eu-energy-map/layout/dashboard.py) | Configures top navigation bar logo in `FastListTemplate` |
 | **`PICTURE_PATH`** | [layout/dashboard.py](file:///home/kuranez/Projects_new/python/eu-energy-map/layout/dashboard.py) | Renders thumbnail preview image in the descriptive side-panel |
 
@@ -295,27 +309,26 @@ Uses Python's `pathlib` to anchor asset paths relative to `config.py` itself, en
 
 ### **III. Data Loading & Filtering Pipeline: `data/`**
 
-The `data/` directory houses the core data ingestion, harmonization, and transformation pipeline. Its primary role is to bridge raw, multi-format Eurostat exports with geographic boundaries, producing clean, standardized DataFrames for the visualization layer.
-
+The `data/` directory houses the orchestration scripts for data loading and filtering. Following a clean architecture, these modules contain **no direct Pandas/GeoPandas operations** and instead delegate all file loading, normalizations, merges, type conversions, and aggregations to `utils.helpers`.
 
 The pipeline is split into two specialized modules:
-1. **Module: `loader.py`**: Handles file retrieval, schema normalization, country code reconciliation, and multi-file concatenation.
-2. **Module: `filters.py`**: Merges tabular metrics with country geometries, standardizes category terminology, filters for official EU member states, and calculates aggregate benchmarks.
+1. **Module: `loader.py`**: Coordinates file retrieval, schema normalization, country key reconciliation, and multi-file concatenation.
+2. **Module: `filters.py`**: Coordinates spatial merging with country geometries, standardizes energy terminology, filters for official EU member states, and calculates aggregate benchmarks.
 
 ---
 
 #### **📦 Imports & Dependencies**
 
 ##### 👉 Module: `data/loader.py`
-* **`os`**: Performs filesystem verification (`os.path.exists`, `os.PathLike`) to validate that dataset CSVs and GeoJSON files exist before attempting to parse them.
-* **`typing (Union, Tuple, Sequence)`**: Enforces strict type signatures, supporting flexible input arguments (single file path string or sequence of file paths) and declaring return types (`Union[pd.DataFrame, Tuple[pd.DataFrame, gpd.GeoDataFrame]]`).
-* **`pandas (pd)`**: Used for reading CSV files (`read_csv`), concatenating disparate dataset versions (`concat`), column manipulation, and dictionary-based remapping.
-* **`geopandas (gpd)`**: Parses European boundary geometries from GeoJSON (`read_file`) and manages them within a `GeoDataFrame`.
-* **`utils.flags (iso2_to_flag)`**: Converts two-letter ISO country codes into corresponding unicode flag emojis.
+* **`os`**: Path validation (`os.path.exists`, `os.PathLike`).
+* **`typing (Union, Tuple, Sequence)`**: Strict type signatures for input arguments and return structures.
+* **`pandas (pd)` & `geopandas (gpd)`**: Type hints for DataFrames and GeoDataFrames.
+* **`utils.helpers`**: Imports dedicated helper functions: `load_csv_data`, `load_gdf`, `normalize_frame_columns`, `build_country_mapping`, `map_geo_keys`, `concat_dataframes`, `merge_data`, `rename_columns`, `apply_energy_type_mapping`, `clean_columns`, `convert_data_types`, `add_code_column`, `add_iso2_code_column`, `add_country_flags`, `select_columns`, `iso2_to_flag`.
 
 ##### 👉 Module: `data/filters.py`
-* **`pandas (pd)`**: Drives the core data transformations—spatial/tabular merging (`merge`), dropping metadata columns (`drop`), deduplicating records (`drop_duplicates`), coercing numeric types (`to_numeric`), and computing annual EU averages (`groupby`).
-* **`utils.flags (add_country_flags)`**: Vectorized utility that appends national flag emojis to the DataFrame based on sanitized country codes.
+* **`typing.Union`**: Type annotations.
+* **`pandas (pd)` & `geopandas (gpd)`**: Type annotations.
+* **`utils.helpers`**: Imports dedicated helper functions: `build_country_mapping`, `map_geo_keys`, `merge_data`, `rename_columns`, `apply_energy_type_mapping`, `clean_columns`, `convert_data_types`, `add_code_column`, `deduplicate_rows`, `add_iso2_code_column`, `add_country_flags`, `filter_by_energy_type`, `filter_eu_countries`, `calculate_eu_average`.
 
 ---
 
@@ -323,20 +336,20 @@ The pipeline is split into two specialized modules:
 
 ```mermaid
 flowchart TD
-    subgraph Ingestion ["1. Data Ingestion (loader.py)"]
-        A["nrg_ind_ren_linear_old.csv<br/>(2004–2022, ISO codes)"] --> C["_normalize_frame_columns()"]
+    subgraph Ingestion ["1. Data Ingestion (loader.py ➔ utils/helpers.py)"]
+        A["nrg_ind_ren_linear_old.csv<br/>(2004–2022, ISO codes)"] --> C["normalize_frame_columns()"]
         B["nrg_ind_ren_linear.csv<br/>(2015–2024, Full names)"] --> C
-        C --> D["Country Mapping Reconciler<br/>(Names/ISO ➔ CNTR_ID)"]
-        D --> E["pd.concat() ➔ raw_data"]
-        GEO["europe.geojson"] --> GDF["gpd.read_file() ➔ europe_gdf"]
+        C --> D["build_country_mapping() &<br/>map_geo_keys()"]
+        D --> E["concat_dataframes() ➔ raw_data"]
+        GEO["europe.geojson"] --> GDF["load_gdf() ➔ europe_gdf"]
     end
 
-    subgraph Transformation ["2. Transformation & Filtering (filters.py)"]
+    subgraph Transformation ["2. Transformation & Filtering (filters.py ➔ utils/helpers.py)"]
         E & GDF --> F["preprocess()"]
-        F --> G["• Merge tabular + spatial<br/>• Clean & round types<br/>• Standardize energy categories<br/>• Add flag emojis (EL➔GR)"]
+        F --> G["• merge_data()<br/>• rename_columns()<br/>• apply_energy_type_mapping()<br/>• clean_columns()<br/>• convert_data_types()<br/>• add_code_column() & add_iso2_code_column()<br/>• add_country_flags()"]
         G --> H["filter_data()"]
-        H --> I["df_renewable<br/>(EU27 Country Data)"]
-        H --> J["df_eu_total<br/>(Annual EU-wide Means)"]
+        H --> I["df_renewable<br/>(filter_by_energy_type & filter_eu_countries)"]
+        H --> J["df_eu_total<br/>(calculate_eu_average)"]
     end
 ```
 
@@ -344,45 +357,66 @@ flowchart TD
 
 ##### **1. Ingestion & Reconciliation: `loader.py`**
 
-###### ⚙️ Method documentation: `_normalize_frame_columns(frame)`
-
-  Standardizes structural discrepancies across different Eurostat export versions:
-  * Detects and harmonizes legacy column names (e.g., renames `siec` to `nrg_bal`).
-  * Normalizes category labels (`REN`, `R5110-5150_W6000RIS`) to `'Renewable energy - overall'`.
-  * Converts time dimensions (`TIME_PERIOD`) into numeric integers.
-
 ###### ⚙️ Method documentation: `load_data(...)`
 
-  The primary ingestion function:
-  * Reads `europe.geojson` into a GeoPandas `GeoDataFrame`.
-  * **Reconciles Country Identifiers:** Eurostat's modern file uses full country names (e.g., `"Germany"`), while the historical file uses 2-letter codes (e.g., `"DE"`). `load_data` dynamically builds a mapping table from the GeoDataFrame (`NAME_ENGL`, `ISO3_CODE`, `CNTR_ID`) to unify all country references under a consistent `CNTR_ID` key (`geo_key`).
-  * Concatenates historical and modern records into a single DataFrame.
-  * When `return_raw=True` is passed (as in `app.py`), returns the tuple `(raw_data, europe_gdf)`.
+```python
+def load_data(
+    data_path: Union[str, Sequence[str]] = (
+        './data/nrg_ind_ren_linear.csv',
+        './data/nrg_ind_ren_linear_old.csv',
+    ),
+    geo_path: str = './geo/europe.geojson',
+    return_raw: bool = False
+) -> Union[pd.DataFrame, Tuple[pd.DataFrame, gpd.GeoDataFrame]]:
+```
 
+* **Description:**  
+  Main ingestion function that reads boundary polygons and tabular energy CSVs, harmonizes country identifiers, and returns processed data or raw tuples.
+* **Process Flow:**
+  1. Validates file existence using `os.path.exists`.
+  2. Loads `europe.geojson` using `load_gdf()`.
+  3. Builds a dynamic country dictionary (`build_country_mapping()`) to unify full names (`"Germany"`) and codes (`"DE"`) under standard `CNTR_ID` keys (`map_geo_keys()`).
+  4. Normalizes column headers and legacy codes using `normalize_frame_columns()`.
+  5. Combines datasets using `concat_dataframes()`.
+  6. If `return_raw=True`, returns `(data, europe_gdf)`.
+  7. Otherwise, executes the full cleaning pipeline via helper functions and returns `select_columns(merged_data)`.
 
+---
 
 ##### **2. Preprocessing & Aggregation: `filters.py`**
 
 ###### ⚙️ Method documentation: `preprocess(data, europe)`
 
-  Prepares the raw tabular and spatial data for visualization:
-  * Merges the energy data with European country geometries on `CNTR_ID == geo_key`.
-  * Renames technical column keys to user-friendly titles:
-    * `TIME_PERIOD` to `Year`
-    * `OBS_VALUE` to `Renewable Percentage`
-    * `NAME_ENGL` to `Country`
-    * `nrg_bal` to `Energy Type`
-  * Maps Eurostat energy classifications into descriptive labels (e.g., `'Renewable energy - overall'` to `'Renewable Energy Total'`).
-  * Strips technical metadata columns (`DATAFLOW`, `OBS_FLAG`, `CONF_STATUS`, `unit`, etc.).
-  * Rounds renewable percentages to 1 decimal place.
-  * Appends ISO2 country codes (converting Greece `EL` to `GR` for emoji compatibility) and attaches national flag emojis via `add_country_flags()`.
-  * Deduplicates overlapping records between the historical and modern files (`keep='last'`).
+```python
+def preprocess(data: pd.DataFrame, europe: Union[pd.DataFrame, gpd.GeoDataFrame]) -> pd.DataFrame:
+```
+
+* **Description:**  
+  Merges raw tabular energy statistics with European country geometries and prepares the data for visualization using helper functions.
+* **Process Flow:**
+  1. Harmonizes country keys using `build_country_mapping()` and `map_geo_keys()`.
+  2. Merges geometries and energy statistics via `merge_data()`.
+  3. Standardizes column names (`rename_columns()`) using `COLUMN_MAPPING`.
+  4. Converts category codes into descriptive names (`apply_energy_type_mapping()`).
+  5. Strips metadata columns (`clean_columns()`).
+  6. Coerces numbers and rounds percentages (`convert_data_types()`).
+  7. Assigns plotting code (`add_code_column()`) and ISO2 code (`add_iso2_code_column()`).
+  8. Deduplicates records (`deduplicate_rows()`) and appends flags (`add_country_flags()`).
 
 ###### ⚙️ Method documentation: `filter_data(merged)`
 
-  Separates the preprocessed data into two specific visual targets:
-  1. **`df_renewable`**: Filters records exclusively to the official 27 EU member states (`AT`, `BE`, `BG`, `HR`, `CY`, `CZ`, `DK`, `EE`, `FI`, `FR`, `DE`, `EL`, `HU`, `IE`, `IT`, `LV`, `LT`, `LU`, `MT`, `NL`, `PL`, `PT`, `RO`, `SK`, `SI`, `ES`, `SE`) for `'Renewable Energy Total'`.
-  2. **`df_eu_total`**: Computes the benchmark annual European Union mean for each year from 2004 to 2024 via `.groupby('Year')['Renewable Percentage'].mean()`.
+```python
+def filter_data(merged: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+```
+
+* **Description:**  
+  Filters preprocessed data for EU member states and calculates annual EU benchmark averages.
+* **Process Flow:**
+  1. Filters for `'Renewable Energy Total'` via `filter_by_energy_type()`.
+  2. Filters for the 27 EU member states via `filter_eu_countries()`.
+  3. Deduplicates country/year entries via `deduplicate_rows()`.
+  4. Computes annual benchmark means across the EU via `calculate_eu_average()`.
+  5. Returns `(df_renewable, df_eu_total)`.
 
 ---
 
@@ -406,7 +440,7 @@ The `components/` directory encapsulates all visual presentation elements and us
 
 #### **1. Geospatial Map Component: `components/map.py`**
 
-This module constructs the interactive European choropleth map that visually displays renewable energy adoption by country for any selected year.
+This module constructs the interactive European choropleth map that visually displays renewable energy adoption by country for any selected year using Plotly 6 and MapLibre.
 
 ##### 📦 Imports & Dependencies
 * **`plotly.graph_objects as go`**: Generates the high-level `Figure` container and the underlying tile-based `Choroplethmap` trace.
@@ -521,16 +555,65 @@ The `layout/dashboard.py` module assembles all UI building blocks into one Panel
 
 ### **VI. Utilities: `utils/`**
 
-The `utils/` package contains lightweight helpers used by visual and data-preparation modules.
+The `utils/` package contains centralized helper functions, mapping utilities, color scale calculations, and flag emoji conversions.
+
+---
+
+#### 👉 Module: `utils/helpers.py`
+
+The core helper module encapsulating all direct Pandas and GeoPandas operations for the application:
+
+* **File & Data Loading:**
+  * `load_csv_data(file_path)`: Reads CSV files with `low_memory=False`.
+  * `load_gdf(file_path)`: Parses spatial GeoJSON files into a GeoPandas `GeoDataFrame`.
+  * `load_geojson(file_path)`: Loads raw GeoJSON as Python dictionaries.
+  * `load_and_combine_csv_data(folder_path, pattern)`: Concatenates matching CSVs from a directory.
+  * `concat_dataframes(data_frames, ignore_index=True)`: Concatenates sequences of DataFrames safely.
+* **Data Normalization & Mapping:**
+  * `normalize_frame_columns(frame, mapping=None)`: Standardizes `siec`/`nrg_bal` column headers and normalizes codes using `NORMALIZE_ENERGY_MAPPING`.
+  * `build_country_mapping(europe_gdf)`: Dynamically generates country name/code lookup dictionaries from GeoDataFrame metadata.
+  * `map_geo_keys(frame, country_mapping, source_col='geo', target_col='geo_key')`: Harmonizes country identifiers into standard `CNTR_ID` keys.
+  * `rename_columns(data, custom_mapping=None)`: Standardizes columns using `COLUMN_MAPPING` from `config.py`.
+  * `apply_energy_type_mapping(data, custom_mapping=None)`: Maps energy codes to descriptive names using `ENERGY_TYPE_MAPPING`.
+  * `clean_columns(data, columns_to_drop=None)`: Drops metadata columns using `COLUMNS_TO_DROP`.
+  * `convert_data_types(data, columns=None, round_digits=1)`: Coerces numeric columns and rounds percentages.
+  * `add_code_column(data, source_col='CNTR_ID', target_col='Code')`: Duplicates `CNTR_ID` as `Code` for plotting.
+  * `add_iso2_code_column(data, source_column='Code', target_column='ISO2_Code')`: Maps country codes (EL $\rightarrow$ GR) using `COUNTRY_CODE_MAPPING`.
+  * `add_iso2_code_columns(europe_gdf, data)`: Adds ISO2 codes to both spatial and tabular datasets.
+* **Merging & Column Selection:**
+  * `merge_data(europe, data, left_key='CNTR_ID', right_key='geo_key')`: Merges geographic and tabular DataFrames.
+  * `select_columns(data, columns=None)`: Filters DataFrames to the canonical `FINAL_COLUMNS` schema.
+* **Deduplication, Filtering & Aggregation:**
+  * `deduplicate_rows(data, subset, keep='last')`: Deduplicates DataFrame rows across column subsets.
+  * `filter_eu_countries(data, code_column='Code', additional_countries=None)`: Filters data for the 27 EU member states using `EU_COUNTRIES`.
+  * `filter_by_energy_type(data, energy_type='Renewable Energy Total')`: Filters rows by energy category.
+  * `calculate_eu_average(data, group_by='Year', target_col='Renewable Percentage')`: Calculates annual EU benchmark means.
+* **Flag Emoji Utilities:**
+  * `iso2_to_flag(iso2_code)`: Converts two-letter ISO country codes into corresponding unicode flag emojis.
+  * `add_country_flags(data, source_column='ISO2_Code', target_column='Flag')`: Appends national flag emojis to the DataFrame.
+
+---
+
+#### 👉 Module: `utils/mapping.py`
+
+Provides getter and application functions for centralized dictionaries in `config.py`:
+
+* `get_energy_type_mapping(custom_mapping=None)`: Retrieves energy category mapping.
+* `get_country_code_mapping(custom_mapping=None)`: Retrieves country code mapping.
+* `get_eu_countries(additional_countries=None)`: Retrieves EU country codes set.
+* `get_column_mapping(custom_mapping=None)`: Retrieves column renaming dictionary.
+* `get_columns_to_drop(additional_columns=None)`: Retrieves column drop list.
+* `apply_column_mapping(data, custom_mapping=None)`: Renames DataFrame columns.
+* `apply_energy_type_mapping(data, custom_mapping=None)`: Applies energy type descriptions.
 
 ---
 
 #### 👉 Module: `utils/colors.py`
 
-Provides color-scale logic for map rendering:
+Provides color-scale logic for map and chart rendering:
 
 * Exposes a global Plotly Viridis palette (`get_colorscale()`), consumed by `components/map.py`.
-* Normalizes percentages to a stable `[0, 1]` domain (`normalize_value`) with clamping, which prevents out-of-range values from breaking visual mapping.
+* Normalizes percentages to a stable `[0, 1]` domain (`normalize_value`) with clamping, preventing out-of-range values from breaking visual mapping.
 * Samples colors by value (`get_viridis_color`) and supports both `hex` and `rgba` output formats.
 * Includes internal conversion helpers (`_tuple_to_hex`, `_hex_to_rgba`) to standardize color outputs for Plotly and UI styling.
 
@@ -538,10 +621,7 @@ Provides color-scale logic for map rendering:
 
 #### 👉 Module: `utils/flags.py`
 
-Provides country-flag enrichment helpers:
-
-* `iso2_to_flag(iso2_code)` converts ISO 3166-1 alpha-2 codes (e.g., `DE`) into Unicode flag emojis.
-* `add_country_flags(data)` appends a `Flag` column based on `ISO2_Code`, enabling richer labels and hover content in map/chart views.
+A lightweight re-export module that imports `iso2_to_flag` and `add_country_flags` from `utils.helpers` for backward compatibility across legacy scripts and tests.
 
 ---
 
@@ -582,7 +662,7 @@ The `geo/` directory stores geographic boundary data used for map rendering.
 >
 > - **Author:** [Franz M. / kuranez](https://github.com/kuranez)
 >
-> - **Documentation:** [18/09/2026]
+> - **Documentation:** [07/10/2026]
 
 
 ### Resources
@@ -595,7 +675,7 @@ The `geo/` directory stores geographic boundary data used for map rendering.
 >
 > - [Jupyter](https://jupyter.org/) - An interactive environment for running Python code in notebooks, ideal for experimentation, documentation, and prototyping scripts.
 >
-> - [Docker Documentation](https://docs.docker.com/) -  Official guides for containerizing, deploying, and running this app consistently across different environments.
+> - [Docker Documentation](https://docs.docker.com/) - Official guides for containerizing, deploying, and running this app consistently across different environments.
 
 ### License
 

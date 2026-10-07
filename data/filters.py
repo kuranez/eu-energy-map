@@ -1,61 +1,52 @@
 # data/filters.py
 
+from typing import Union
 import pandas as pd
-from utils.flags import add_country_flags
+import geopandas as gpd
 
-# Preprocess the data to merge with Europe GeoDataFrame and clean up columns
+from utils.helpers import (
+    build_country_mapping,
+    map_geo_keys,
+    merge_data,
+    rename_columns,
+    apply_energy_type_mapping,
+    clean_columns,
+    convert_data_types,
+    add_code_column,
+    deduplicate_rows,
+    add_iso2_code_column,
+    add_country_flags,
+    filter_by_energy_type,
+    filter_eu_countries,
+    calculate_eu_average,
+)
 
-def preprocess(data: pd.DataFrame, europe: pd.DataFrame) -> pd.DataFrame:
+
+def preprocess(data: pd.DataFrame, europe: Union[pd.DataFrame, gpd.GeoDataFrame]) -> pd.DataFrame:
     '''
     Function to preprocess the energy data.
     Merges the energy data with Europe GeoDataFrame, renames columns, and formats the data.
     '''
-    data = data.copy()
-    country_mapping = {}
-    for _, row in europe.iterrows():
-        for value in [row.get('NAME_ENGL'), row.get('CNTR_ID'), row.get('ISO3_CODE'), row.get('ISO2_Code')]:
-            if pd.notna(value):
-                country_mapping[str(value).strip()] = row['CNTR_ID']
-
-    data['geo_key'] = data['geo'].astype(str).map(country_mapping).fillna(data['geo']).astype(str)
-    merged = europe.merge(data, left_on='CNTR_ID', right_on='geo_key')
-    # Rename columns to standardized format
-    merged.rename(columns={
-        'nrg_bal': 'Energy Type', 'TIME_PERIOD': 'Year',
-        'OBS_VALUE': 'Renewable Percentage',
-        'NAME_ENGL': 'Country'
-    }, inplace=True)
-    # Replace energy type codes with human-readable names
-    energy_type_map = {
-        'Renewable energy - overall': 'Renewable Energy Total',
-        'Renewable energy - electricity': 'Renewable Electricity',
-        'Renewable energy - heating and cooling': 'Renewable Heating and Cooling',
-        'Renewable energy - transport': 'Renewable Energy in Transport'
-    }
-    # Apply the energy type mapping
-    merged['Energy Type'] = merged['Energy Type'].replace(energy_type_map)
-    # Drop unnecessary columns
-    columns_to_drop = ['DATAFLOW', 'LAST UPDATE', 'freq', 'unit', 'OBS_FLAG', 'CONF_STATUS', 'geo', 'geo_key']
-    merged.drop(columns=columns_to_drop, inplace=True, errors='ignore')
-    # Convert Year and Renewable Percentage to numeric and round
-    merged[['Year', 'Renewable Percentage']] = merged[['Year', 'Renewable Percentage']].apply(pd.to_numeric)
-    # Round the Renewable Percentage
-    merged['Renewable Percentage'] = merged['Renewable Percentage'].round(1)
-    # Add 'Code' column from 'CNTR_ID' for plotting
-    merged['Code'] = merged['CNTR_ID']
-    # Deduplicate rows that represent the same country/year/energy combination
-    merged = merged.drop_duplicates(subset=['Code', 'Year', 'Energy Type'], keep='last')
-    # Add ISO2_Code for flag purposes (EL→GR), but keep Code as EL for plotting
-    merged['ISO2_Code'] = merged['Code'].replace('EL', 'GR')
-    # Add country flags based on ISO2_Code
+    country_mapping = build_country_mapping(europe)
+    data = map_geo_keys(data, country_mapping)
+    merged = merge_data(europe, data, left_key='CNTR_ID', right_key='geo_key')
+    merged = rename_columns(merged)
+    merged = apply_energy_type_mapping(merged)
+    merged = clean_columns(merged)
+    merged = convert_data_types(merged, ['Year', 'Renewable Percentage'])
+    merged = add_code_column(merged, source_col='CNTR_ID', target_col='Code')
+    merged = deduplicate_rows(merged, subset=['Code', 'Year', 'Energy Type'], keep='last')
+    merged = add_iso2_code_column(merged, source_column='Code', target_column='ISO2_Code')
     merged = add_country_flags(merged)
     return merged
 
-# Filter the data for EU countries and calculate average renewable percentage
+
 def filter_data(merged: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
-    eu_countries = {"AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT",
-                    "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"}
-    df_renewable = merged[(merged['Energy Type'] == 'Renewable Energy Total') & merged['Code'].isin(eu_countries)]
-    df_renewable = df_renewable.drop_duplicates(subset=['Code', 'Year'], keep='last')
-    df_eu_total = df_renewable.groupby('Year', as_index=False)['Renewable Percentage'].mean().reset_index()
+    '''
+    Filter the data for EU countries and calculate average renewable percentage.
+    '''
+    df_renewable = filter_by_energy_type(merged, energy_type='Renewable Energy Total')
+    df_renewable = filter_eu_countries(df_renewable, code_column='Code')
+    df_renewable = deduplicate_rows(df_renewable, subset=['Code', 'Year'], keep='last')
+    df_eu_total = calculate_eu_average(df_renewable, group_by='Year', target_col='Renewable Percentage')
     return df_renewable, df_eu_total
